@@ -9,7 +9,7 @@ class DogEncyclopediaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: '강아지 백과사전',
+      title: '강아지 백과사전123',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
