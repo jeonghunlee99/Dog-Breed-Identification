@@ -10,34 +10,104 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
       ),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DogCategoryPage()),
-                );
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15), // 둥근 모서리
-                child: Image.asset(
-                  'asset/dog_image.png',
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.cover,
+            // 소형 강아지 카테고리
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DogCategoryPage()),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.asset(
+                      'asset/dog_image.png',
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(height: 10),
+                Text(
+                  '소형 강아지',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 10), // 이미지와 텍스트 사이 간격
-            Text(
-              '강아지 카테고리',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            // 중형 강아지 카테고리
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DogCategoryPage()),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.asset(
+                      'asset/dog_image2.png',
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  '중형 강아지',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            // 대형 강아지 카테고리
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DogCategoryPage()),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.asset(
+                      'asset/big_dog.png',
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  '대형 강아지',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
