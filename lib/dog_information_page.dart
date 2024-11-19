@@ -19,11 +19,11 @@ class DogInformationPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('데이터를 불러오지 못했습니다.'));
+            return const Center(child: Text('12데이터를 불러오지 못했습니다.'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('해당 카테고리에 데이터가 없습니다.'));
           } else {
-            // 필터링된 데이터만 표시
+
             final filteredDogs = snapshot.data!.where((dog) {
               return dog.size.contains(category);
             }).toList();

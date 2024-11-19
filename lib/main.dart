@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'homepage.dart';
 
-void main() {
-  runApp(DogEncyclopediaApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
 }
 
-class DogEncyclopediaApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -19,5 +21,3 @@ class DogEncyclopediaApp extends StatelessWidget {
     );
   }
 }
-
-
