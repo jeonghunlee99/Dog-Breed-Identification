@@ -23,7 +23,7 @@ class DogInformationPage extends StatelessWidget {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('해당 카테고리에 데이터가 없습니다.'));
           } else {
-            // 필터링된 데이터만 표시
+
             final filteredDogs = snapshot.data!.where((dog) {
               return dog.size.contains(category);
             }).toList();

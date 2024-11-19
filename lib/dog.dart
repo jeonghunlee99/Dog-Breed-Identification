@@ -1,5 +1,5 @@
-import 'dart:convert'; // JSON 변환을 위한 패키지
-import 'package:flutter/services.dart'; // 로컬 파일 로드를 위한 패키지
+import 'dart:convert';
+import 'package:flutter/services.dart';
 
 class Dog {
   final String name;
@@ -32,14 +32,14 @@ class Dog {
 
 Future<List<Dog>> loadDogs() async {
   try {
-    // assets 폴더의 JSON 파일 읽기
+
     final String response = await rootBundle.loadString('asset/dog_information.json');
     final List<dynamic> data = json.decode(response);
 
-    // JSON 데이터를 Dog 객체로 변환
+
     return data.map((json) => Dog.fromJson(json)).toList();
   } catch (e) {
-    print("Error loading dogs: $e"); // 에러 로그 출력
+    print("Error loading dogs: $e");
     rethrow;
   }
 }
