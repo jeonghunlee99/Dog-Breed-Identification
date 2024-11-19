@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dog_category_page.dart';
+import 'dog_information_page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -21,7 +21,9 @@ class HomePage extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DogCategoryPage()),
+                      MaterialPageRoute(
+                        builder: (context) => DogInformationPage(category: '소형'),
+                      ),
                     );
                   },
                   child: ClipRRect(
@@ -53,7 +55,9 @@ class HomePage extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DogCategoryPage()),
+                      MaterialPageRoute(
+                        builder: (context) => DogInformationPage(category: '중형'),
+                      ),
                     );
                   },
                   child: ClipRRect(
@@ -85,7 +89,9 @@ class HomePage extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DogCategoryPage()),
+                      MaterialPageRoute(
+                        builder: (context) => DogInformationPage(category: '대형'),
+                      ),
                     );
                   },
                   child: ClipRRect(

@@ -4,7 +4,7 @@
     "image_url": "https://via.placeholder.com/150",
     "description": "골든 리트리버는 친근하고 지능적인 품종으로 잘 알려져 있습니다. 가족들과 잘 어울리며 충성심이 강합니다.",
     "characteristics": {
-      "size": "중대형",
+      "size": "중형 , 대형",
       "temperament": "친근함, 충성심",
       "life_span": "10-12년"
     }
@@ -24,7 +24,7 @@
     "image_url": "https://via.placeholder.com/150",
     "description": "푸들은 높은 지능과 우아한 외모로 사랑받는 품종입니다. 다양한 크기(토이, 미니어처, 스탠다드)로 나뉩니다.",
     "characteristics": {
-      "size": "소형-대형",
+      "size": "소형,중형,대형",
       "temperament": "영리함, 활발함",
       "life_span": "12-15년"
     }
