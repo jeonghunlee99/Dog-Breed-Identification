@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Riverpod provider 정의
 final dogsProvider = FutureProvider<List<Dog>>((ref) async {
-  final String response = await rootBundle.loadString('asset/dog_information.json');
+  final String response =
+      await rootBundle.loadString('asset/dog_information.json');
   final List<dynamic> data = json.decode(response);
   return data.map((json) => Dog.fromJson(json)).toList();
 });
@@ -27,11 +27,10 @@ class DogInformationPage extends ConsumerWidget {
         centerTitle: true,
       ),
       body: dogsAsyncValue.when(
-
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => const Center(child: Text('데이터를 불러오지 못했습니다.')),
+        error: (error, stackTrace) =>
+            const Center(child: Text('데이터를 불러오지 못했습니다.')),
         data: (dogs) {
-
           final filteredDogs = dogs.where((dog) {
             if (category == '소형' || category == '중형' || category == '대형') {
               return dog.size.contains(category);
@@ -47,7 +46,6 @@ class DogInformationPage extends ConsumerWidget {
             filteredDogs.sort((a, b) {
               return a.iqRank.compareTo(b.iqRank);
             });
-
           }
 
           if (filteredDogs.isEmpty) {
@@ -61,9 +59,12 @@ class DogInformationPage extends ConsumerWidget {
               return Card(
                 margin: EdgeInsets.all(10),
                 child: ListTile(
-                  leading: Image.network(dog.imageUrl, width: 50, height: 50, fit: BoxFit.cover),
-                  title: Text(dog.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('${dog.description}\nIQ 순위:  ${dog.iqRank.toString()}위'),
+                  leading: Image.network(dog.imageUrl,
+                      width: 50, height: 50, fit: BoxFit.cover),
+                  title: Text(dog.name,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                      '${dog.description}\nIQ 순위:  ${dog.iqRank.toString()}위'),
                 ),
               );
             },
