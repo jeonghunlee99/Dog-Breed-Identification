@@ -19,7 +19,6 @@ class DogInformationPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Riverpod을 통해 dogsProvider의 상태를 구독합니다.
     final dogsAsyncValue = ref.watch(dogsProvider);
 
     return Scaffold(
@@ -28,15 +27,11 @@ class DogInformationPage extends ConsumerWidget {
         centerTitle: true,
       ),
       body: dogsAsyncValue.when(
-        // 로딩 중일 때
+
         loading: () => const Center(child: CircularProgressIndicator()),
-
-        // 에러 발생 시
         error: (error, stackTrace) => const Center(child: Text('데이터를 불러오지 못했습니다.')),
-
-        // 데이터가 준비되었을 때
         data: (dogs) {
-          // 필터링된 강아지 리스트
+
           final filteredDogs = dogs.where((dog) {
             if (category == '소형' || category == '중형' || category == '대형') {
               return dog.size.contains(category);
@@ -48,10 +43,9 @@ class DogInformationPage extends ConsumerWidget {
             return false;
           }).toList();
 
-          // IQ 순위 카테고리일 때 iqRank로 정렬
           if (category == 'IQ 순위') {
             filteredDogs.sort((a, b) {
-              return a.iqRank.compareTo(b.iqRank); // iqRank가 null이 아니면 바로 비교
+              return a.iqRank.compareTo(b.iqRank);
             });
 
           }
