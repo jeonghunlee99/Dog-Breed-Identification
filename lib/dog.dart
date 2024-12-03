@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Dog {
   final String name;
@@ -37,16 +38,8 @@ class Dog {
 
 
 
-Future<List<Dog>> loadDogs() async {
-  try {
-
-    final String response = await rootBundle.loadString('asset/dog_information.json');
-    final List<dynamic> data = json.decode(response);
-
-
-    return data.map((json) => Dog.fromJson(json)).toList();
-  } catch (e) {
-    print("Error loading dogs: $e");
-    rethrow;
-  }
-}
+final dogsProvider = FutureProvider<List<Dog>>((ref) async {
+  final String response = await rootBundle.loadString('asset/dog_information.json');
+  final List<dynamic> data = json.decode(response);
+  return data.map((json) => Dog.fromJson(json)).toList();
+});
