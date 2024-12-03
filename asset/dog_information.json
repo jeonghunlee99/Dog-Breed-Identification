@@ -6,7 +6,9 @@
     "characteristics": {
       "size": "중형 , 대형",
       "temperament": "친근함, 충성심",
-      "life_span": "10-12년"
+      "life_span": "10-12년",
+      "Coat" : "단모종",
+      "iqRank": 1
     }
   },
   {
@@ -16,7 +18,9 @@
     "characteristics": {
       "size": "중형",
       "temperament": "활발함, 외향적",
-      "life_span": "12-14년"
+      "life_span": "12-14년",
+      "Coat" : "장모종",
+      "iqRank": 3
     }
   },
   {
@@ -26,7 +30,9 @@
     "characteristics": {
       "size": "소형,중형,대형",
       "temperament": "영리함, 활발함",
-      "life_span": "12-15년"
+      "life_span": "12-15년",
+      "Coat" : "장모종",
+      "iqRank": 2
     }
   }
 ]
