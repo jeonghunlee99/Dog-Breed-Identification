@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'dog_information_page.dart';
 import 'dogcategorywidget.dart';
+import 'navigator.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('강아지 백과사전'),
-        centerTitle: true,
-      ),
+
       body: Container(
-        height: 700,
+        height: 800,
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(30),
@@ -130,6 +128,14 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomBottomNavBar(
+
+          ),
+        ],
       ),
     );
   }
