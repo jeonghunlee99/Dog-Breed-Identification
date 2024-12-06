@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 
+import 'dog_information.dart';
+import 'dog_photo.dart';
+import 'dog_profile.dart';
+import 'dog_walk_screen.dart';
+import 'homepage.dart';
+
 class CustomBottomNavBar extends StatefulWidget {
-  const CustomBottomNavBar({super.key});
+  final int currentIndex;
+  final Function(int) onTap;
+
+  const CustomBottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   CustomBottomNavBarState createState() => CustomBottomNavBarState();
 }
 
 class CustomBottomNavBarState extends State<CustomBottomNavBar> {
-  int currentIndex = 0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,20 +46,25 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                 color: Colors.white,
                 size: 40,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  _createPageRoute(HomePage()), (route) => false,
+                );
+              },
             ),
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height:95,
+            height: 95,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                buildIconWithText('asset/dog_walk.png', '강아지 산책', 0),
-                buildIconWithText('asset/dog_information.png', '강아지 사전', 1),
+                buildIconWithText('asset/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
+                buildIconWithText('asset/dog_information.png', '강아지 사전', 1, const DogInformationPage()),
                 Container(width: MediaQuery.of(context).size.width * 0.20),
-                buildIconWithText('asset/dog_photo.png', '강아지 앨범', 2),
-                buildIconWithText('asset/dog_profile2321.png', '강아지 프로필', 3),
+                buildIconWithText('asset/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
+                buildIconWithText('asset/dog_profile2321.png', '강아지 프로필', 3, const ProfilePage()),
               ],
             ),
           ),
@@ -55,15 +73,18 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
     );
   }
 
-  Widget buildIconWithText(String imagePath, String text, int index) {
+  Widget buildIconWithText(String imagePath, String text, int index, Widget targetPage) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
           onTap: () {
-            setState(() {
-              currentIndex = index;
-            });
+            widget.onTap(index);  // 외부에서 전달된 onTap을 호출
+            Navigator.pushAndRemoveUntil(
+              context,
+              _createPageRoute(targetPage),
+                  (route) => false,
+            );
           },
           child: Container(
             width: 50,
@@ -85,11 +106,10 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
             ),
           ),
         ),
-
         Text(
           text,
           style: TextStyle(
-            color: currentIndex == index ? Colors.black : Colors.black54,
+            color: widget.currentIndex == index ? Colors.black : Colors.black54,
             fontSize: 12,
           ),
         ),
@@ -97,6 +117,17 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
     );
   }
 
+
+  PageRouteBuilder _createPageRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+
+        var fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animation);
+        return FadeTransition(opacity: fadeAnimation, child: child);
+      },
+    );
+  }
 }
 
 class BNBCustomPainter extends CustomPainter {
