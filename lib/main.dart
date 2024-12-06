@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import 추가
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'homepage.dart';
 
 void main() async {
