@@ -4,11 +4,18 @@ import 'dog_information_page.dart';
 import 'dogcategorywidget.dart';
 import 'navigator.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 4;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Container(
         height: 800,
         decoration: BoxDecoration(
@@ -129,13 +136,13 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomBottomNavBar(
-
-          ),
-        ],
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }
