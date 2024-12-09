@@ -37,13 +37,13 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
           Center(
             heightFactor: 0.6,
             child: FloatingActionButton(
-              backgroundColor: Colors.green,
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(50),
               ),
               child: const Icon(
-                Icons.pets,
-                color: Colors.white,
+                Icons.home,
+                color: Colors.brown,
                 size: 40,
               ),
               onPressed: () {
@@ -61,7 +61,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 buildIconWithText('asset/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
-                buildIconWithText('asset/dog_information.png', '강아지 사전', 1, const DogInformationPage()),
+                buildIconWithText('asset/dog_information.png', '강아지 건강', 1, const DogInformationPage()),
                 Container(width: MediaQuery.of(context).size.width * 0.20),
                 buildIconWithText('asset/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
                 buildIconWithText('asset/dog_profile2321.png', '강아지 프로필', 3, const ProfilePage()),
@@ -79,7 +79,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
       children: [
         GestureDetector(
           onTap: () {
-            widget.onTap(index);  // 외부에서 전달된 onTap을 호출
+            widget.onTap(index);
             Navigator.pushAndRemoveUntil(
               context,
               _createPageRoute(targetPage),
