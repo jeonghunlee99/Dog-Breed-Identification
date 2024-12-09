@@ -15,8 +15,8 @@ class _DogInformationPageState extends State<DogInformationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('강아지 사전')),
-      body: Center(),
+      appBar: AppBar(title: const Text('강아지 건강')),
+      body: Text("1.강아지에게 주는약 날짜 기록, \n2.병원 방문기록,진료예약날짜 기록, \n3.지도와 연동하여 가까운 동물병원 표시"),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
