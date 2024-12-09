@@ -16,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('강아지 프로필')),
-      body: Center(),
+      body: Text("1.강아지 프로필 등록 하기(firebase를 통한 crud) \n2.+설정페이지 느낌 "),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
