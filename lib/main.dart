@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'homepage.dart';
+import 'screen/homepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
