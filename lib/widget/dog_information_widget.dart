@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dog_breed_identification/dog.dart';
+import 'package:dog_breed_identification/class/dog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

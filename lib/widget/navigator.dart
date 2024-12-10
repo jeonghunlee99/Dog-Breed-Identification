@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'dog_information.dart';
-import 'dog_photo.dart';
-import 'dog_profile.dart';
-import 'dog_walk_screen.dart';
-import 'homepage.dart';
+import '../screen/dog_information_screen.dart';
+import '../screen/dog_photo_screen.dart';
+import '../screen/dog_profile_screen.dart';
+import '../screen/dog_walk_screen.dart';
+import '../screen/homepage.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   final int currentIndex;
