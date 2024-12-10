@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:dog_breed_identification/albumpage.dart';
-import 'package:dog_breed_identification/navigator.dart';
+import 'package:dog_breed_identification/screen/dog_album_screen.dart';
+import 'package:dog_breed_identification/widget/navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -30,7 +30,7 @@ class _DogPhotoPageState extends State<DogPhotoPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AlbumPage(photos: _photos, onBackgroundSet: _setBackground), // 배경 설정 콜백 전달
+        builder: (context) => AlbumPage(photos: _photos, onBackgroundSet: _setBackground),
       ),
     );
   }

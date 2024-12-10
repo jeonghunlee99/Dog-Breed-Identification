@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'navigator.dart';
+import '../widget/navigator.dart';
 
 class DogWalkPage extends StatefulWidget {
   const DogWalkPage({super.key});

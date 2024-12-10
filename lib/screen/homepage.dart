@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'dog_information_page.dart';
-import 'dogcategorywidget.dart';
-import 'navigator.dart';
+import '../widget/dog_information_widget.dart';
+import '../widget/dog_category_widget.dart';
+import '../widget/navigator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
