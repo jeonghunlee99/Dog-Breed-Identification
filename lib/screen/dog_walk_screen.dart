@@ -50,12 +50,11 @@ class _DogWalkPageState extends State<DogWalkPage> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(74),
+        preferredSize: const Size.fromHeight(74),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0,
-
           bottom: TabBar(
             controller: _tabController,
             indicatorColor: Colors.black,
@@ -69,46 +68,42 @@ class _DogWalkPageState extends State<DogWalkPage> with SingleTickerProviderStat
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 5,
-                blurRadius: 15,
-                offset: Offset(0, 4),
+      body: Container(
+        margin: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 5,
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  BuildRecordWidget(
+                    selectedDay: _selectedDay,
+                    walkEvents: _walkEvents,
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                      });
+                    },
+                    onAddWalkRecord: _addWalkRecord, // 산책 기록 추가
+                  ),
+                  StatsWidget(walkStats: _walkStats),
+                  TimerWidget(onWalkComplete: _addWalkRecord),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            children: [
-
-              Container(
-                height: MediaQuery.of(context).size.height ,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    BuildRecordWidget(
-                      selectedDay: _selectedDay,
-                      walkEvents: _walkEvents,
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                        });
-                      },
-                      onAddWalkRecord: _addWalkRecord, // 산책 기록 추가
-                    ),
-                    StatsWidget(walkStats: _walkStats),
-                    TimerWidget(onWalkComplete: _addWalkRecord),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
