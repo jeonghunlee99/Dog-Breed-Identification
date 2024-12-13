@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../screen/dog_information_screen.dart';
+import '../screen/dog_health_screen.dart';
 import '../screen/dog_photo_screen.dart';
 import '../screen/dog_profile_screen.dart';
 import '../screen/dog_walk_screen.dart';
@@ -61,7 +60,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 buildIconWithText('asset/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
-                buildIconWithText('asset/dog_information.png', '강아지 건강', 1, const DogInformationPage()),
+                buildIconWithText('asset/dog_information.png', '강아지 건강', 1, const DogHealthPage()),
                 Container(width: MediaQuery.of(context).size.width * 0.20),
                 buildIconWithText('asset/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
                 buildIconWithText('asset/dog_profile2321.png', '강아지 프로필', 3, const ProfilePage()),
