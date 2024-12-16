@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
-import '../widget/dog_infomation_hospital_map.dart';
-import '../widget/dog_infomation_record.dart';
+import '../widget/dog_health_hospital_map.dart';
+import '../widget/dog_health_record.dart';
 import '../widget/navigator.dart';
 
 class DogHealthPage extends StatefulWidget {
