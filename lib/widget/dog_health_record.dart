@@ -18,6 +18,7 @@ class HealthRecordWidget extends StatefulWidget {
 class _HealthRecordWidgetState extends State<HealthRecordWidget> {
   DateTime? selectedDate;
   String dateText = '날짜 선택';
+  String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +36,17 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
               backgroundColor: WidgetStateProperty.all(Colors.white),
             ),
             onPressed: () {
+              setState(() {
+                errorText = null;
+              });
+
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  TextEditingController memoController =
-                  TextEditingController();
+                  TextEditingController memoController = TextEditingController();
 
                   return StatefulBuilder(
-                    builder:
-                        (BuildContext context, StateSetter setDialogState) {
+                    builder: (BuildContext context, StateSetter setDialogState) {
                       return AlertDialog(
                         title: const Text(
                           '날짜와 메모 추가',
@@ -58,9 +61,11 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                // 날짜 선택 캘린더
                                 SfCalendar(
                                   todayHighlightColor: Colors.transparent,
-                                  todayTextStyle: TextStyle(color: Color.fromARGB(255, 68, 140, 255)),
+                                  todayTextStyle: TextStyle(
+                                      color: Color.fromARGB(255, 68, 140, 255)),
                                   view: CalendarView.month,
                                   showNavigationArrow: true,
                                   initialSelectedDate: DateTime.now(),
@@ -68,14 +73,19 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                                     setDialogState(() {
                                       selectedDate = details.date;
                                       if (selectedDate != null) {
-                                        dateText = '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}';
+                                        dateText =
+                                        '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}';
                                       }
                                     });
                                   },
                                   selectionDecoration: BoxDecoration(
                                     color: Colors.transparent,
-                                    border: Border.all(color: const Color.fromARGB(255, 68, 140, 255), width: 2),
-                                    borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                    border: Border.all(
+                                        color: const Color.fromARGB(
+                                            255, 68, 140, 255),
+                                        width: 2),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(4)),
                                     shape: BoxShape.rectangle,
                                   ),
                                 ),
@@ -83,26 +93,25 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                                 const SizedBox(height: 10),
                                 TextField(
                                   controller: memoController,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.black),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.black),
                                     ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black),
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.black),
                                     ),
                                     labelText: '메모 입력',
-                                    labelStyle: TextStyle(
-                                        color: Colors.black),
+                                    labelStyle: const TextStyle(color: Colors.black),
+                                    errorText: errorText, // 오류 메시지 표시
                                   ),
                                   style: const TextStyle(
                                       fontSize: 16, color: Colors.black),
-
                                   keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.done,
                                   cursorColor: Colors.black,
@@ -114,7 +123,14 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              if (memoController.text.isNotEmpty) {
+                              if (memoController.text.isEmpty) {
+                                // 메모가 비어 있을 때 오류 메시지 처리
+                                setDialogState(() {
+                                  setState(() {
+                                    errorText = '메모를 입력해주세요.';
+                                  });
+                                });
+                              } else {
                                 widget.onAddRecord({
                                   'date': dateText,
                                   'memo': memoController.text,
@@ -124,8 +140,8 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                             },
                             child: const Text(
                               '확인',
-                              style: TextStyle(color: Colors.black, fontSize: 16),
-
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ),
                           TextButton(
@@ -134,8 +150,8 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                             },
                             child: const Text(
                               '취소',
-                              style: TextStyle(color: Colors.black, fontSize: 16),
-
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ),
                         ],
