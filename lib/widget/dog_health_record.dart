@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class HealthRecordWidget extends StatefulWidget {
   final List<Map<String, String>> records;
@@ -15,6 +16,9 @@ class HealthRecordWidget extends StatefulWidget {
 }
 
 class _HealthRecordWidgetState extends State<HealthRecordWidget> {
+  DateTime? selectedDate;
+  String dateText = '날짜 선택';
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -28,95 +32,89 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
           const SizedBox(height: 10),
           ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.white),
+              backgroundColor: WidgetStateProperty.all(Colors.white),
             ),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  DateTime? selectedDate;
-                  TextEditingController memoController = TextEditingController();
-                  String dateText = '날짜 선택';
-                  String? errorMessage;
+                  TextEditingController memoController =
+                  TextEditingController();
 
                   return StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setDialogState) {
+                    builder:
+                        (BuildContext context, StateSetter setDialogState) {
                       return AlertDialog(
                         title: const Text(
                           '날짜와 메모 추가',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                        content: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.8, // 다이얼로그 폭 조정
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    side: const BorderSide(color: Colors.grey),
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  DateTime? picked = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2100),
-                                  );
-                                  if (picked != null) {
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 20),
+                        content: SingleChildScrollView(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SfCalendar(
+                                  todayHighlightColor: Colors.transparent,
+                                  todayTextStyle: TextStyle(color: Color.fromARGB(255, 68, 140, 255)),
+                                  view: CalendarView.month,
+                                  showNavigationArrow: true,
+                                  initialSelectedDate: DateTime.now(),
+                                  onTap: (details) {
                                     setDialogState(() {
-                                      selectedDate = picked;
-                                      dateText = '${picked.year}-${picked.month}-${picked.day}';
-                                      errorMessage = null;
+                                      selectedDate = details.date;
+                                      if (selectedDate != null) {
+                                        dateText = '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}';
+                                      }
                                     });
-                                  }
-                                },
-                                child: Text(
-                                  dateText,
-                                  style: const TextStyle(color: Colors.black, fontSize: 16),
-                                ),
-                              ),
-                              if (errorMessage != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    errorMessage!,
-                                    style: const TextStyle(color: Colors.red),
+                                  },
+                                  selectionDecoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    border: Border.all(color: const Color.fromARGB(255, 68, 140, 255), width: 2),
+                                    borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                    shape: BoxShape.rectangle,
                                   ),
                                 ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: memoController,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: '메모 입력',
-                                ),
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
+
+                                const SizedBox(height: 10),
+                                TextField(
+                                  controller: memoController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.black),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.black),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.black),
+                                    ),
+                                    labelText: '메모 입력',
+                                    labelStyle: TextStyle(
+                                        color: Colors.black),
+                                  ),
+                                  style: const TextStyle(
+                                      fontSize: 16, color: Colors.black),
+
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.done,
+                                  cursorColor: Colors.black,
+                                )
+                              ],
+                            ),
                           ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text(
-                              '취소',
-                              style: TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              if (selectedDate == null) {
-                                setDialogState(() {
-                                  errorMessage = '날짜를 선택하세요';
-                                });
-                              } else if (memoController.text.isNotEmpty) {
+                              if (memoController.text.isNotEmpty) {
                                 widget.onAddRecord({
                                   'date': dateText,
                                   'memo': memoController.text,
@@ -127,6 +125,17 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
                             child: const Text(
                               '확인',
                               style: TextStyle(color: Colors.black, fontSize: 16),
+
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              '취소',
+                              style: TextStyle(color: Colors.black, fontSize: 16),
+
                             ),
                           ),
                         ],
