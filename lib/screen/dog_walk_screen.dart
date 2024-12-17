@@ -15,7 +15,6 @@ class _DogWalkPageState extends State<DogWalkPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-
   final Map<DateTime, List<String>> _walkEvents = {};
   final Map<DateTime, Duration> _walkStats = {};
   DateTime _selectedDay = DateTime.now();
@@ -40,7 +39,12 @@ class _DogWalkPageState extends State<DogWalkPage>
       if (_walkEvents[normalizedDate] == null) {
         _walkEvents[normalizedDate] = [];
       }
-      _walkEvents[normalizedDate]!.add("산책 기록");
+
+      int currentRecordNumber = _walkEvents[normalizedDate]!.isEmpty
+          ? 1
+          : int.parse(_walkEvents[normalizedDate]!.last.split(' ').last) + 1;
+
+      _walkEvents[normalizedDate] = ["산책 횟수 : $currentRecordNumber"];
     });
   }
 
@@ -52,21 +56,21 @@ class _DogWalkPageState extends State<DogWalkPage>
     );
 
     setState(() {
+      if (_walkStats[normalizedDate] == null) {
+        _walkStats[normalizedDate] = duration;
+      } else {
+        _walkStats[normalizedDate] = _walkStats[normalizedDate]! + duration;
+      }
+
       if (_walkEvents[normalizedDate] == null) {
         _walkEvents[normalizedDate] = [];
       }
 
-      if (!_walkEvents[normalizedDate]!.contains("산책 기록")) {
-        _walkEvents[normalizedDate]!.add("산책 기록");
-      }
+      int currentRecordNumber = _walkEvents[normalizedDate]!.isEmpty
+          ? 1
+          : int.parse(_walkEvents[normalizedDate]!.last.split(' ').last) + 1;
 
-
-      if (_walkStats[normalizedDate] == null) {
-        _walkStats[normalizedDate] = duration;
-      } else {
-        _walkStats[normalizedDate] =
-            _walkStats[normalizedDate]! + duration;
-      }
+      _walkEvents[normalizedDate] = ["산책 횟수 : $currentRecordNumber"];
     });
   }
 
@@ -122,15 +126,12 @@ class _DogWalkPageState extends State<DogWalkPage>
                         _selectedDay = selectedDay;
                       });
                     },
-                    onAddWalkRecord: _addWalkRecord, // 기록 추가 로직 연결
+                    onAddWalkRecord: _addWalkRecord,
                   ),
-
-                  // 통계 페이지
                   StatsWidget(
                     walkStats: _walkStats,
                     walkEvents: _walkEvents,
                   ),
-                  // 타이머 페이지
                   TimerWidget(onWalkComplete: _addWalktime),
                 ],
               ),
