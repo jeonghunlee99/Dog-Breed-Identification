@@ -78,6 +78,7 @@ class _DogWalkPageState extends State<DogWalkPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(74),
         child: AppBar(
