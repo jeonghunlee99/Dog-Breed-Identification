@@ -11,10 +11,13 @@ class DogWalkPage extends StatefulWidget {
   State<DogWalkPage> createState() => _DogWalkPageState();
 }
 
-class _DogWalkPageState extends State<DogWalkPage> with SingleTickerProviderStateMixin {
+class _DogWalkPageState extends State<DogWalkPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
+
   final Map<DateTime, List<String>> _walkEvents = {};
-  final Map<DateTime, int> _walkStats = {};
+  final Map<DateTime, Duration> _walkStats = {};
   DateTime _selectedDay = DateTime.now();
   int _currentIndex = 0;
 
@@ -37,14 +40,36 @@ class _DogWalkPageState extends State<DogWalkPage> with SingleTickerProviderStat
       if (_walkEvents[normalizedDate] == null) {
         _walkEvents[normalizedDate] = [];
       }
+      _walkEvents[normalizedDate]!.add("산책 기록");
+    });
+  }
+
+  void _addWalktime(Duration duration) {
+    final normalizedDate = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+
+    setState(() {
+      if (_walkEvents[normalizedDate] == null) {
+        _walkEvents[normalizedDate] = [];
+      }
 
       if (!_walkEvents[normalizedDate]!.contains("산책 기록")) {
         _walkEvents[normalizedDate]!.add("산책 기록");
       }
 
-      _walkStats[normalizedDate] = (_walkStats[normalizedDate] ?? 0) + 1;
+
+      if (_walkStats[normalizedDate] == null) {
+        _walkStats[normalizedDate] = duration;
+      } else {
+        _walkStats[normalizedDate] =
+            _walkStats[normalizedDate]! + duration;
+      }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +113,7 @@ class _DogWalkPageState extends State<DogWalkPage> with SingleTickerProviderStat
               child: TabBarView(
                 controller: _tabController,
                 children: [
+                  // 산책 기록 페이지
                   BuildRecordWidget(
                     selectedDay: _selectedDay,
                     walkEvents: _walkEvents,
@@ -96,10 +122,16 @@ class _DogWalkPageState extends State<DogWalkPage> with SingleTickerProviderStat
                         _selectedDay = selectedDay;
                       });
                     },
-                    onAddWalkRecord: _addWalkRecord, // 산책 기록 추가
+                    onAddWalkRecord: _addWalkRecord, // 기록 추가 로직 연결
                   ),
-                  StatsWidget(walkStats: _walkStats),
-                  TimerWidget(onWalkComplete: _addWalkRecord),
+
+                  // 통계 페이지
+                  StatsWidget(
+                    walkStats: _walkStats,
+                    walkEvents: _walkEvents,
+                  ),
+                  // 타이머 페이지
+                  TimerWidget(onWalkComplete: _addWalktime),
                 ],
               ),
             ),

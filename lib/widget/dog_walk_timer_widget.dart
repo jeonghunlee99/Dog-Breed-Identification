@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TimerWidget extends StatefulWidget {
-  final void Function(DateTime date) onWalkComplete;
+  final void Function(Duration duration) onWalkComplete; // Duration으로 변경
 
   const TimerWidget({super.key, required this.onWalkComplete});
 
@@ -53,7 +53,7 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 
   void _completeWalk() {
-    widget.onWalkComplete(DateTime.now());
+    widget.onWalkComplete(_duration); // 걸린 시간을 전달
     _resetTimer();
   }
 
@@ -74,13 +74,13 @@ class _TimerWidgetState extends State<TimerWidget> {
               onPressed: _isRunning ? _stopTimer : _startTimer,
               child: Text(
                 _isRunning ? '중지' : '시작',
-                style: TextStyle(color: Colors.black), // 텍스트 색상
+                style: const TextStyle(color: Colors.black), // 텍스트 색상
               ),
             ),
             const SizedBox(width: 16),
             ElevatedButton(
               onPressed: _resetTimer,
-              child: Text(
+              child: const Text(
                 '초기화',
                 style: TextStyle(color: Colors.black),
               ),
@@ -90,10 +90,17 @@ class _TimerWidgetState extends State<TimerWidget> {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: _isRunning ? null : _completeWalk,
-          child: const Text('산책 완료',
-          style: TextStyle(color: Colors.black),),
+          child: const Text(
+            '산책 완료',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
       ],
     );
   }
 }
+
+
+
+
+
