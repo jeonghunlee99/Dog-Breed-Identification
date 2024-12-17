@@ -90,6 +90,7 @@ class _DogPhotoPageState extends State<DogPhotoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Container(
           decoration: BoxDecoration(
