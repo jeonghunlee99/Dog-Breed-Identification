@@ -39,7 +39,6 @@ class _ProfilePageState extends State<ProfilePage> {
               shadowColor: Colors.black.withOpacity(0.3),
               child: Stack(
                 children: [
-                  // 카드 배경 이미지
                   ClipRRect(
                     borderRadius: BorderRadius.circular(30),
                     child: Image.asset(
@@ -76,8 +75,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          // 나머지 카드들
           Card(
+            color: Colors.white,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
@@ -88,17 +87,74 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  // "로그인" 타이틀
                   ListTile(
-                    title: const Text(''),
+                    title: Center(
+                      child: Text(
+                        '로그인',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                   ),
-                  ListTile(
-                    title: const Text(''),
+                  const SizedBox(height: 16),
+
+                  // 이메일 입력 필드
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: '이메일1',
+                      prefixIcon: Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 비밀번호 입력 필드
+                  TextField(
+                    obscureText: true, // 비밀번호 입력 숨김
+                    decoration: InputDecoration(
+                      labelText: '비밀번호',
+                      prefixIcon: Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 로그인 버튼
+                  ElevatedButton(
+                    onPressed: () {
+                      // 나중에 기능 추가 예정
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 80),
+
+                    ),
+                    child: const Text(
+                      '로그인',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
+
           Card(
+            color: Colors.white,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
