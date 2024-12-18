@@ -71,28 +71,38 @@ class _TimerWidgetState extends State<TimerWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
+              style:ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown[400]
+              ),
               onPressed: _isRunning ? _stopTimer : _startTimer,
               child: Text(
                 _isRunning ? '중지' : '시작',
-                style: const TextStyle(color: Colors.black), // 텍스트 색상
+                style: const TextStyle(color: Colors.white), // 텍스트 색상
               ),
             ),
             const SizedBox(width: 16),
             ElevatedButton(
+              style:ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown[400]
+              ),
               onPressed: _resetTimer,
               child: const Text(
                 '초기화',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
+
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
         ElevatedButton(
+          style:ElevatedButton.styleFrom(
+              backgroundColor: Colors.brown[400]
+          ),
           onPressed: _isRunning ? null : _completeWalk,
           child: const Text(
             '산책 완료',
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.white),
           ),
         ),
       ],
