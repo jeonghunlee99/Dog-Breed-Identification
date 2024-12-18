@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widget/edit_profile_dialog.dart';
 import '../widget/navigator.dart';
+import 'login_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -39,7 +40,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 borderRadius: BorderRadius.circular(30),
                 child: Stack(
                   children: [
-                    // 배경 이미지
                     Image.asset(
                       'asset/dog_profile_card.png',
                       height: 150,
@@ -48,8 +48,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     // 텍스트
                     Positioned(
-                      bottom: 35, // 아래쪽 위치 조정
-                      left: 16, // 왼쪽 여백 조정
+                      bottom: 35,
+                      left: 16,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -111,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
-                      // 클릭 이벤트
+
                     },
                   ),
                   ListTile(
@@ -139,7 +139,13 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // 나중에 기능 추가 예정
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(), // 이동할 페이지 지정
+                    ),
+                  );
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
