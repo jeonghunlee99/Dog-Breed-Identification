@@ -30,148 +30,134 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           GestureDetector(
             onTap: _showEditProfileDialog,
-            child: Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              shape: RoundedRectangleBorder(
+            child: Container(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.black, width: 1.0),
               ),
-              elevation: 10,
-              shadowColor: Colors.black.withOpacity(0.3),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Image.asset(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Stack(
+                  children: [
+                    // 배경 이미지
+                    Image.asset(
                       'asset/dog_profile_card.png',
                       height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
-                  ),
-                  Positioned(
-                    left: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "강아지 이름: $dogName",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.black,
+                    // 텍스트
+                    Positioned(
+                      bottom: 35, // 아래쪽 위치 조정
+                      left: 16, // 왼쪽 여백 조정
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "강아지 이름: $dogName",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "품종: $dogBreed\n나이: $dogAge",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
+                          Text(
+                            "품종: $dogBreed\n나이: $dogAge",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
           Card(
-            color: Colors.white,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
             elevation: 10,
             shadowColor: Colors.black.withOpacity(0.3),
-            child: Padding(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.black, width: 1.0),
+              ),
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // "로그인" 타이틀
-                  ListTile(
-                    title: Center(
-                      child: Text(
-                        '로그인',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 이메일 입력 필드
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: '이메일1',
-                      prefixIcon: Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 비밀번호 입력 필드
-                  TextField(
-                    obscureText: true, // 비밀번호 입력 숨김
-                    decoration: InputDecoration(
-                      labelText: '비밀번호',
-                      prefixIcon: Icon(Icons.lock),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 로그인 버튼
-                  ElevatedButton(
-                    onPressed: () {
-                      // 나중에 기능 추가 예정
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 80),
-
-                    ),
-                    child: const Text(
-                      '로그인',
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      '설정',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                  ListTile(
+                    title: const Text(
+                      '개인정보처리방침',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      // 클릭 이벤트
+                    },
+                  ),
+                  ListTile(
+                    title: const Text(
+                      '현재 버전',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    trailing: const Text(
+                      '1.0.0',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-
-          Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            elevation: 10,
-            shadowColor: Colors.black.withOpacity(0.3),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  ListTile(
-                    title: const Text(''),
+          Center(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.black, width: 1.0),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  // 나중에 기능 추가 예정
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  ListTile(
-                    title: const Text(''),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 14, horizontal: 150),
+                  elevation: 10,
+                ),
+                child: const Text(
+                  '간편 로그인',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                ],
+                ),
               ),
             ),
           ),
