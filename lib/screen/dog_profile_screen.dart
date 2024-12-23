@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widget/edit_profile_dialog.dart';
 import '../widget/navigator.dart';
 import 'login_screen.dart';
@@ -13,10 +15,45 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int _currentIndex = 3;
 
-  // 예시 데이터 //
-  String dogName = "멍멍이";
-  String dogBreed = "시바견";
-  String dogAge = "3년";
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // 강아지 정보 //
+  String dogName = "로딩 중...";
+  String dogBreed = "로딩 중...";
+  String dogAge = "로딩 중...";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDogProfile();
+  }
+
+  Future<void> _fetchDogProfile() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        final doc = await _firestore.collection('dogs').doc(user.uid).get();
+        if (doc.exists) {
+          setState(() {
+            dogName = doc['name'] ?? '알 수 없음';
+            dogBreed = doc['breed'] ?? '알 수 없음';
+            dogAge = doc['age'] ?? '알 수 없음';
+          });
+        } else {
+          // 문서가 없을 경우 기본값 표시
+          setState(() {
+            dogName = "정보 없음";
+            dogBreed = "정보 없음";
+            dogAge = "정보 없음";
+          });
+        }
+      } catch (e) {
+
+        print('Firestore 데이터 가져오기 실패: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
-                    // 텍스트
+
                     Positioned(
                       bottom: 35,
                       left: 16,
@@ -111,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
-
+                      // 개인정보처리방침 페이지로 이동
                     },
                   ),
                   ListTile(
@@ -145,7 +182,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context) => LoginScreen(), // 이동할 페이지 지정
                     ),
                   );
-
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
