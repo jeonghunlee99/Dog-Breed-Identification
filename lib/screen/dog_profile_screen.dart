@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widget/edit_profile_dialog.dart';
 import '../widget/navigator.dart';
 import 'login_screen.dart';
@@ -13,13 +15,48 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int _currentIndex = 3;
 
-  // 예시 데이터 //
-  String dogName = "멍멍이";
-  String dogBreed = "시바견";
-  String dogAge = "3년";
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // 강아지 정보 //
+  String dogName = "로딩 중...";
+  String dogBreed = "로딩 중...";
+  String dogAge = "로딩 중....";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDogProfile();
+  }
+
+  Future<void> _fetchDogProfile() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        final doc = await _firestore.collection('dogs').doc(user.uid).get();
+        if (doc.exists) {
+          setState(() {
+            dogName = doc['name'] ?? '알 수 없음';
+            dogBreed = doc['breed'] ?? '알 수 없음';
+            dogAge = doc['age'] ?? '알 수 없음';
+          });
+        } else {
+          // 문서가 없을 경우 기본값 표시
+          setState(() {
+            dogName = "정보 없음";
+            dogBreed = "정보 없음";
+            dogAge = "정보 없음";
+          });
+        }
+      } catch (e) {
+        print('Firestore 데이터 가져오기 실패: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final User? currentUser = _auth.currentUser;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -30,7 +67,18 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16.0),
         children: [
           GestureDetector(
-            onTap: _showEditProfileDialog,
+            onTap: () {
+              if (currentUser == null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
+                  ),
+                );
+              } else {
+                _showEditProfileDialog();
+              }
+            },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
@@ -38,42 +86,67 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
-                child: Stack(
-                  children: [
-                    Image.asset(
-                      'asset/dog_profile_card.png',
-                      height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    // 텍스트
-                    Positioned(
-                      bottom: 35,
-                      left: 16,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: currentUser == null
+                    ? Stack(
                         children: [
-                          Text(
-                            "강아지 이름: $dogName",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.black,
+                          Image.asset(
+                            'asset/dog_profile_card.png',
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                          Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "로그인을 하고 프로필을 설정하세요!",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            "품종: $dogBreed\n나이: $dogAge",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black,
+                        ],
+                      )
+                    : Stack(
+                        children: [
+                          Image.asset(
+                            'asset/dog_profile_card.png',
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            bottom: 35,
+                            left: 16,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "강아지 이름: $dogName",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  "품종: $dogBreed\n나이: $dogAge",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ),
@@ -111,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
-
+                      // 개인정보처리방침 페이지로 이동
                     },
                   ),
                   ListTile(
@@ -139,26 +212,36 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginScreen(), // 이동할 페이지 지정
-                    ),
-                  );
-
+                  if (currentUser == null) {
+                    // 로그인 화면으로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(),
+                      ),
+                    );
+                  } else {
+                    // 로그아웃 수행
+                    _auth.signOut().then((_) {
+                      setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('로그아웃 되었습니다.')),
+                      );
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 14, horizontal: 150),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 150),
                   elevation: 10,
                 ),
-                child: const Text(
-                  '간편 로그인',
-                  style: TextStyle(
+                child: Text(
+                  currentUser == null ? '간편 로그인' : '로그아웃',
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -166,7 +249,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(

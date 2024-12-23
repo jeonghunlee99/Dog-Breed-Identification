@@ -13,7 +13,7 @@ void main() async {
   // .env 파일 로드
   await dotenv.load(fileName: 'asset/config/.env');
 
-  // 네이버맵 SDK 초기화
+  // 네이버맵 SDK 초기화입니다
   await NaverMapSdk.instance.initialize(
     clientId: dotenv.env['clientId']!, // 클라이언트 ID 설정
     onAuthFailed: (e) => log("네이버맵 인증오류: $e", name: "onAuthFailed"),
