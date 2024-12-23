@@ -49,7 +49,6 @@ class _ProfilePageState extends State<ProfilePage> {
           });
         }
       } catch (e) {
-
         print('Firestore 데이터 가져오기 실패: $e');
       }
     }
@@ -57,6 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final User? currentUser = _auth.currentUser;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -67,7 +67,6 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16.0),
         children: [
           GestureDetector(
-            onTap: _showEditProfileDialog,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
@@ -75,7 +74,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
-                child: Stack(
+                child: currentUser == null
+                    ? Stack(
                   children: [
                     Image.asset(
                       'asset/dog_profile_card.png',
@@ -83,34 +83,59 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
-
-                    Positioned(
-                      bottom: 35,
-                      left: 16,
+                    Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "강아지 이름: $dogName",
+                            "로그인을 하고 프로필을 설정하세요!",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                               color: Colors.black,
                             ),
                           ),
-                          Text(
-                            "품종: $dogBreed\n나이: $dogAge",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black,
-                            ),
-                          ),
+
                         ],
                       ),
                     ),
                   ],
-                ),
+                )
+                    : Stack(
+                        children: [
+                          Image.asset(
+                            'asset/dog_profile_card.png',
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            bottom: 35,
+                            left: 16,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "강아지 이름: $dogName",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  "품종: $dogBreed\n나이: $dogAge",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -176,25 +201,36 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginScreen(), // 이동할 페이지 지정
-                    ),
-                  );
+                  if (currentUser == null) {
+                    // 로그인 화면으로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(),
+                      ),
+                    );
+                  } else {
+                    // 로그아웃 수행
+                    _auth.signOut().then((_) {
+                      setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('로그아웃 되었습니다.')),
+                      );
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 14, horizontal: 150),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 150),
                   elevation: 10,
                 ),
-                child: const Text(
-                  '간편 로그인',
-                  style: TextStyle(
+                child: Text(
+                  currentUser == null ? '간편 로그인' : '로그아웃',
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -202,7 +238,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
