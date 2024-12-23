@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // 강아지 정보 //
   String dogName = "로딩 중...";
   String dogBreed = "로딩 중...";
-  String dogAge = "로딩 중...";
+  String dogAge = "로딩 중....";
 
   @override
   void initState() {
@@ -67,6 +67,18 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16.0),
         children: [
           GestureDetector(
+            onTap: () {
+              if (currentUser == null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
+                  ),
+                );
+              } else {
+                _showEditProfileDialog();
+              }
+            },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
@@ -76,31 +88,30 @@ class _ProfilePageState extends State<ProfilePage> {
                 borderRadius: BorderRadius.circular(30),
                 child: currentUser == null
                     ? Stack(
-                  children: [
-                    Image.asset(
-                      'asset/dog_profile_card.png',
-                      height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "로그인을 하고 프로필을 설정하세요!",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.black,
+                          Image.asset(
+                            'asset/dog_profile_card.png',
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                          Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "로그인을 하고 프로필을 설정하세요!",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-
                         ],
-                      ),
-                    ),
-                  ],
-                )
+                      )
                     : Stack(
                         children: [
                           Image.asset(
