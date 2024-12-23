@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1035789597406",
+    "project_id": "dog-breed-identification-e416b",
+    "storage_bucket": "dog-breed-identification-e416b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035789597406:android:db28f99a6a4624ed16a04f",
+        "android_client_info": {
+          "package_name": "com.example.dog_breed_identification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035789597406-ediid9m438ohcv3cvdn2gq1upp2iimpa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dog_breed_identification",
+            "certificate_hash": "6e93404f1078c6c89a1b0b47f49667006aeca21f"
+          }
+        },
+        {
+          "client_id": "1035789597406-6qkbe4vgeqhh3dmk8t0hvndtm3edmr5p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJowPatFq-VYkxkNOrHiPQW2QrvIilhgo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035789597406-6qkbe4vgeqhh3dmk8t0hvndtm3edmr5p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
