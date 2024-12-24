@@ -4,12 +4,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'screen/homepage.dart';
 import 'dart:developer';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  KakaoSdk.init(nativeAppKey: '0625a1bc62482415f2a4a297d644d090');
   // .env 파일 로드
   await dotenv.load(fileName: 'asset/config/.env');
 
@@ -46,5 +49,9 @@ class MyApp extends StatelessWidget {
         home: const HomePage(), // 홈 페이지 연결
       ),
     );
+
   }
+
+
+
 }
