@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
+import '../api/google_login.dart';
+import '../api/kakao_login.dart';
 import 'homepage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,37 +11,30 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleLogin _googleLogin = GoogleLogin();
+  final KakaoLogin _kakaoLogin = KakaoLogin();
 
   Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        // 사용자가 로그인 취소
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+    bool success = await _googleLogin.login();
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
       );
+    } else {
+      print("Google 로그인 실패");
+    }
+  }
 
-      final UserCredential userCredential =
-      await _auth.signInWithCredential(credential);
-      final User? user = userCredential.user;
-
-      if (user != null) {
-        print("Google 로그인 성공: ${user.displayName}");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      }
-    } catch (error) {
-      print("Google 로그인 실패: $error");
+  Future<void> _signInWithKakao() async {
+    bool success = await _kakaoLogin.login();
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      print("Kakao 로그인 실패");
     }
   }
 
@@ -104,17 +96,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     GestureDetector(
                       onTap: _signInWithGoogle,
                       child: Image.asset('asset/google_sign.png',
-                          width: 200,
-                          height: 45,
-                          fit: BoxFit.cover),
+                          width: 200, height: 45, fit: BoxFit.cover),
                     ),
                     SizedBox(height: 10),
                     GestureDetector(
-                      onTap: _signInWithGoogle, // kakao 로그인 미구현
+                      onTap: _signInWithKakao,
                       child: Image.asset('asset/kakao_login.png',
-                          width: 200,
-                          height: 45,
-                          fit: BoxFit.cover),
+                          width: 200, height: 45, fit: BoxFit.cover),
                     ),
                   ],
                 ),
@@ -126,3 +114,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+
+
+
+
+
