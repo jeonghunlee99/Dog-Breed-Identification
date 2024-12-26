@@ -64,7 +64,15 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     };
 
     try {
-      await _firestore.collection('dogs').doc(uid).set(data);
+      await _firestore.collection('dogs').doc(uid).get().then((doc) {
+        if (doc.exists) {
+          // update >> 현재 정보에 업데이트
+          _firestore.collection('dogs').doc(uid).update(data);
+        } else {
+          // set >>  문서가 없으면 dogs 컬렉션에 현재 uid로 된 문서 추가
+          _firestore.collection('dogs').doc(uid).set(data);
+        }
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('저장 완료!')),
       );
@@ -73,6 +81,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         SnackBar(content: Text('저장 실패: $e')),
       );
     }
+
   }
 
   @override
