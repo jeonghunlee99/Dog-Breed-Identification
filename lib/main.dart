@@ -12,6 +12,8 @@ import 'dart:developer';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+
   KakaoSdk.init(nativeAppKey: '0625a1bc62482415f2a4a297d644d090');
   // .env 파일 로드
   await dotenv.load(fileName: 'asset/config/.env');
