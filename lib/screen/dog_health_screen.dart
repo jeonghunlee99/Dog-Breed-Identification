@@ -20,7 +20,7 @@ class _DogHealthPageState extends State<DogHealthPage>
   double? latitude;
   double? longitude;
   int _currentIndex = 1;
-  final List<Map<String, String>> _records = [];
+
 
   @override
   void initState() {
@@ -86,12 +86,7 @@ class _DogHealthPageState extends State<DogHealthPage>
         physics: const NeverScrollableScrollPhysics(),
         children: [
           HealthRecordWidget(
-            records: _records,
-            onAddRecord: (record) {
-              setState(() {
-                _records.add(record);
-              });
-            },
+
           ),
           HospitalMap(
             latitude: latitude,
