@@ -1,18 +1,60 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AlbumPage extends StatefulWidget {
-  final List<File> photos;
   final Function(File) onBackgroundSet;
 
-  const AlbumPage({super.key, required this.photos, required this.onBackgroundSet});
+  const AlbumPage({super.key, required this.onBackgroundSet});
 
   @override
   _AlbumPageState createState() => _AlbumPageState();
 }
 
 class _AlbumPageState extends State<AlbumPage> {
-  void _showImageDialog(BuildContext context, File photo, int index) {
+  List<String> _imageUrls = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImageUrls();
+  }
+
+
+  Future<void> _loadImageUrls() async {
+    try {
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('사용자가 로그인되지 않았습니다.');
+        return;
+      }
+
+      final storageRef = FirebaseStorage.instance.ref();
+      final listResult = await storageRef.child('dog_photos/${user.uid}').listAll();
+
+      List<String> imageUrls = [];
+      for (var item in listResult.items) {
+        String url = await item.getDownloadURL();
+        imageUrls.add(url);
+      }
+
+      setState(() {
+        _imageUrls = imageUrls;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading image URLs: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+  void _showImageDialog(BuildContext context, String imageUrl, int index) {
     showDialog(
       context: context,
       builder: (context) {
@@ -23,11 +65,13 @@ class _AlbumPageState extends State<AlbumPage> {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.file(
-                  photo,
+                child: CachedNetworkImage(  // Firebase Storage에서 캐시된 이미지를 로드
+                  imageUrl: imageUrl,
                   fit: BoxFit.cover,
                   height: 300,
                   width: double.infinity,
+                  placeholder: (context, url) => const CircularProgressIndicator(),  // 로딩 중 표시
+                  errorWidget: (context, url, error) => const Icon(Icons.error),  // 에러 발생 시 표시
                 ),
               ),
               Padding(
@@ -37,7 +81,7 @@ class _AlbumPageState extends State<AlbumPage> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        widget.onBackgroundSet(photo);
+                        widget.onBackgroundSet(File(imageUrl));  // 배경 설정
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.wallpaper),
@@ -46,7 +90,7 @@ class _AlbumPageState extends State<AlbumPage> {
                     ElevatedButton.icon(
                       onPressed: () {
                         setState(() {
-                          widget.photos.removeAt(index);
+                          _imageUrls.removeAt(index);  // 이미지 삭제
                         });
                         Navigator.pop(context);
                       },
@@ -68,7 +112,9 @@ class _AlbumPageState extends State<AlbumPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('앨범')),
-      body: widget.photos.isEmpty
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _imageUrls.isEmpty
           ? const Center(child: Text('사진이 없습니다.'))
           : GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -76,17 +122,19 @@ class _AlbumPageState extends State<AlbumPage> {
           crossAxisSpacing: 4,
           mainAxisSpacing: 4,
         ),
-        itemCount: widget.photos.length,
+        itemCount: _imageUrls.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              _showImageDialog(context, widget.photos[index], index);
+              _showImageDialog(context, _imageUrls[index], index);
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.file(
-                widget.photos[index],
+              child: CachedNetworkImage(
+                imageUrl: _imageUrls[index],
                 fit: BoxFit.cover,
+                placeholder: (context, url) => const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
           );
