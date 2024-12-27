@@ -8,11 +8,9 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'screen/homepage.dart';
 import 'dart:developer';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
 
   KakaoSdk.init(nativeAppKey: '0625a1bc62482415f2a4a297d644d090');
   // .env 파일 로드
@@ -35,7 +33,8 @@ class MyApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        locale: const Locale('ko', 'KR'), // 기본 로케일 설정
+        locale: const Locale('ko', 'KR'),
+        // 기본 로케일 설정
         supportedLocales: const [
           Locale('en', 'US'), // 영어
           Locale('ko', 'KR'), // 한국어
@@ -46,14 +45,14 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          textSelectionTheme: TextSelectionThemeData(
+            cursorColor: Colors.black, // 커서 색상
+            selectionColor: Colors.black.withOpacity(0.3), // 텍스트 선택 시 배경 색상
+            selectionHandleColor: Colors.grey, // 선택 핸들의 색상
+          ),
         ),
         home: const HomePage(), // 홈 페이지 연결
       ),
     );
-
   }
-
-
-
 }
