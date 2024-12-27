@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../api/google_login.dart';
 import '../api/kakao_login.dart';
+import 'dog_start_profile.dart';
 import 'homepage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,24 +20,47 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInWithGoogle() async {
     bool success = await _googleLogin.login();
     if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      // Firebase에서 로그인한 사용자 확인
+      User? user = FirebaseAuth.instance.currentUser; // Firebase 인증을 통해 현재 사용자 가져오기
+      if (user != null) {
+        await _checkUserProfile(user.uid); // Firestore에서 사용자 프로필 확인
+      }
     } else {
       print("Google 로그인 실패");
     }
   }
 
+
+  // Kakao 로그인 처리
   Future<void> _signInWithKakao() async {
     bool success = await _kakaoLogin.login();
     if (success) {
+      // Firebase에서 로그인한 사용자 확인
+      User? user = FirebaseAuth.instance.currentUser; // Firebase 인증을 통해 현재 사용자 가져오기
+      if (user != null) {
+        await _checkUserProfile(user.uid); // Firestore에서 사용자 프로필 확인
+      }
+    } else {
+      print("Kakao 로그인 실패");
+    }
+  }
+
+  Future<void> _checkUserProfile(String uid) async {
+    final docRef = FirebaseFirestore.instance.collection('dogs').doc(uid); // Firestore에서 uid 문서 확인
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
+      // 프로필이 있으면 홈 화면으로 이동
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
     } else {
-      print("Kakao 로그인 실패");
+      // 프로필이 없으면 프로필 작성 화면으로 이동
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DogStartProfilePage()), // 회원가입 페이지
+      );
     }
   }
 
