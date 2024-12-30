@@ -124,6 +124,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                   return null;
                 },
               ),
+              SizedBox(height: 5),
               TextFormField(
                 controller: _breedController,
                 decoration: InputDecoration(
@@ -146,6 +147,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                   return null;
                 },
               ),
+              SizedBox(height: 5),
               TextFormField(
                 controller: _ageController,
                 decoration: InputDecoration(
