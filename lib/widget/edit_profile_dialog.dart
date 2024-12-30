@@ -79,17 +79,44 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           _firestore.collection('dogs').doc(uid).set(data);
         }
       });
+
+      // 커스텀 SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장 완료!')),
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white), // 아이콘 추가
+              const SizedBox(width: 8),
+              const Text('저장 완료!', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+          backgroundColor: Colors.green, // 배경 색상 변경
+          behavior: SnackBarBehavior.floating, // 화면 위로 떠 있는 스타일
+          margin: const EdgeInsets.only(bottom: 50, left: 20, right: 20), // 여백 설정
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12), // 둥근 모서리
+          ),
+          action: SnackBarAction(
+            label: '닫기',
+            textColor: Colors.white,
+            onPressed: () {
+              // SnackBar 닫기 동작
+            },
+          ),
+          duration: const Duration(seconds: 3), // 표시 시간 조정
+        ),
       );
 
-      // 유효성 검사가 통과하고 저장이 완료된 후에만 창을 닫음
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('저장 실패: $e')),
+        SnackBar(
+          content: Text('저장 실패: $e'),
+          backgroundColor: Colors.red, // 실패 메시지의 배경 색상
+        ),
       );
     }
+
   }
 
   @override
