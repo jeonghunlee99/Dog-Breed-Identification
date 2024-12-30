@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../widget/custom_snackbar.dart';
 import 'homepage.dart';
 
 
@@ -30,8 +31,11 @@ class _DogStartProfileState extends State<DogStartProfilePage> {
             'age': _dogAgeController.text,
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('프로필이 저장되었습니다.')),
+          CustomSnackBar.show(
+            context,
+            message: '프로필이 저장되었습니다.',
+            backgroundColor: Colors.green,
+            icon: Icons.check_circle,
           );
 
           // 다음 화면으로 이동 또는 폼 초기화
@@ -43,17 +47,24 @@ class _DogStartProfileState extends State<DogStartProfilePage> {
             ModalRoute.withName('/'), // 루트 페이지를 제외한 모든 화면을 제거
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('로그인이 필요합니다.')),
+          CustomSnackBar.show(
+            context,
+            message: '로그인이 필요합니다.',
+            backgroundColor: Colors.red,
+            icon: Icons.error,
           );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('오류가 발생했습니다: $e')),
+        CustomSnackBar.show(
+          context,
+          message: '오류가 발생했습니다: $e',
+          backgroundColor: Colors.red,
+          icon: Icons.error,
         );
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

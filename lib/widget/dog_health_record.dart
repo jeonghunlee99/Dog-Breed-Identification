@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'custom_snackbar.dart';
+
 class HealthRecordWidget extends StatefulWidget {
   const HealthRecordWidget({super.key});
 
@@ -63,27 +65,36 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
   Future<void> _deleteHealthRecord(String date, String memo) async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그인이 필요합니다.')),
+      CustomSnackBar.show(
+        context,
+        message: '로그인이 필요합니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
       );
       return;
     }
 
     try {
       final userDocRef =
-          FirebaseFirestore.instance.collection('dogs').doc(user.uid);
+      FirebaseFirestore.instance.collection('dogs').doc(user.uid);
 
       await userDocRef.update({
         'health': FieldValue.arrayRemove([
           {'date': date, 'memo': memo},
         ]),
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('건강 기록이 삭제되었습니다.')),
+      CustomSnackBar.show(
+        context,
+        message: '건강 기록이 삭제되었습니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.check_circle,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('오류가 발생했습니다: $e')),
+      CustomSnackBar.show(
+        context,
+        message: '오류가 발생했습니다: $e',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
       );
       print('$e');
     }
@@ -92,31 +103,41 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
   Future<void> _saveHealthRecord(String date, String memo) async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그인이 필요합니다.')),
+      CustomSnackBar.show(
+        context,
+        message: '로그인이 필요합니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
       );
       return;
     }
 
     try {
       final userDocRef =
-          FirebaseFirestore.instance.collection('dogs').doc(user.uid);
+      FirebaseFirestore.instance.collection('dogs').doc(user.uid);
 
       await userDocRef.update({
         'health': FieldValue.arrayUnion([
           {'date': date, 'memo': memo},
         ]),
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('건강 기록이 저장되었습니다.')),
+      CustomSnackBar.show(
+        context,
+        message: '건강 기록이 저장되었습니다.',
+        backgroundColor: Colors.green,
+        icon: Icons.check_circle,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('오류가 발생했습니다: $e')),
+      CustomSnackBar.show(
+        context,
+        message: '오류가 발생했습니다: $e',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
       );
       print('$e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
