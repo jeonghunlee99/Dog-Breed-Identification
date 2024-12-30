@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../widget/custom_snackbar.dart';
 import '../widget/edit_profile_dialog.dart';
 import '../widget/navigator.dart';
 import 'login_screen.dart';
@@ -224,8 +225,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     // 로그아웃 수행
                     _auth.signOut().then((_) {
                       setState(() {});
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('로그아웃 되었습니다.')),
+                      CustomSnackBar.show(
+                        context,
+                        message: '로그아웃 되었습니다.',
+                        backgroundColor: Colors.red,
+                        icon: Icons.check_circle,
+                      );
+                    }).catchError((error) {
+                      CustomSnackBar.show(
+                        context,
+                        message: '로그아웃 실패: $error',
+                        backgroundColor: Colors.red,
+                        icon: Icons.error,
                       );
                     });
                   }

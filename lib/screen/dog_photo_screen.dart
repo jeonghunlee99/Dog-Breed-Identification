@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import '../widget/custom_snackbar.dart';
+
 class DogPhotoPage extends StatefulWidget {
   const DogPhotoPage({super.key});
 
@@ -34,27 +36,37 @@ class _DogPhotoPageState extends State<DogPhotoPage> {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('로그인되지 않은 사용자')),
-        );
+        _showCustomSnackBar('로그인되지 않은 사용자', Colors.red);
         return;
       }
 
       final storageRef = FirebaseStorage.instance.ref();
-      final fileName = 'dog_photos/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName =
+          'dog_photos/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
       final ref = storageRef.child(fileName);
 
       await ref.putFile(imageFile);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('사진 업로드 완료!')),
-      );
+      _showCustomSnackBar('사진 업로드 완료!', Colors.green);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('업로드 실패: $e')),
-      );
+      _showCustomSnackBar('업로드 실패: $e', Colors.red);
     }
   }
+
+
+
+  void _showCustomSnackBar(String message, Color backgroundColor) {
+    final icon = backgroundColor == Colors.green ? Icons.check_circle : Icons.error;
+
+    CustomSnackBar.show(
+      context,
+      message: message,
+      backgroundColor: backgroundColor,
+      icon: icon,
+    );
+  }
+
+
 
   void _openAlbum() {
     Navigator.push(

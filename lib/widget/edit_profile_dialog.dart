@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'custom_snackbar.dart';
+
 class EditProfileDialog extends StatefulWidget {
   final String initialDogName;
   final String initialDogBreed;
@@ -79,17 +81,26 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           _firestore.collection('dogs').doc(uid).set(data);
         }
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장 완료!')),
+
+
+      CustomSnackBar.show(
+        context,
+        message: '저장 완료!',
+        backgroundColor: Colors.green,
+        icon: Icons.check_circle,
       );
 
-      // 유효성 검사가 통과하고 저장이 완료된 후에만 창을 닫음
+
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('저장 실패: $e')),
+        SnackBar(
+          content: Text('저장 실패: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
+
   }
 
   @override
