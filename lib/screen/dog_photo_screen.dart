@@ -21,15 +21,27 @@ class _DogPhotoPageState extends State<DogPhotoPage> {
   final ImagePicker _picker = ImagePicker();
   File? _backgroundImage;
 
-  Future<void> _takePhoto() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      setState(() {
-        _photos.add(File(pickedFile.path));
-      });
-
-      await _uploadImageToStorage(File(pickedFile.path));
+  // 로그인 상태 체크
+  void _checkLoginStatus(VoidCallback onSuccess) {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      _showCustomSnackBar('로그인 후 이용해주세요!', Colors.red);
+    } else {
+      onSuccess();
     }
+  }
+
+  Future<void> _takePhoto() async {
+    _checkLoginStatus(() async {
+      final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      if (pickedFile != null) {
+        setState(() {
+          _photos.add(File(pickedFile.path));
+        });
+
+        await _uploadImageToStorage(File(pickedFile.path));
+      }
+    });
   }
 
   Future<void> _uploadImageToStorage(File imageFile) async {
@@ -53,28 +65,15 @@ class _DogPhotoPageState extends State<DogPhotoPage> {
     }
   }
 
-
-
-  void _showCustomSnackBar(String message, Color backgroundColor) {
-    final icon = backgroundColor == Colors.green ? Icons.check_circle : Icons.error;
-
-    CustomSnackBar.show(
-      context,
-      message: message,
-      backgroundColor: backgroundColor,
-      icon: icon,
-    );
-  }
-
-
-
   void _openAlbum() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AlbumPage( onBackgroundSet: _setBackground),
-      ),
-    );
+    _checkLoginStatus(() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AlbumPage(onBackgroundSet: _setBackground),
+        ),
+      );
+    });
   }
 
   void _setBackground(File photo) {
@@ -126,6 +125,17 @@ class _DogPhotoPageState extends State<DogPhotoPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showCustomSnackBar(String message, Color backgroundColor) {
+    final icon = backgroundColor == Colors.green ? Icons.check_circle : Icons.error;
+
+    CustomSnackBar.show(
+      context,
+      message: message,
+      backgroundColor: backgroundColor,
+      icon: icon,
     );
   }
 
