@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // FirebaseAuth 사용
 
 class TimerWidget extends StatefulWidget {
   final void Function(Duration duration) onWalkComplete;
@@ -21,14 +22,27 @@ class _TimerWidgetState extends State<TimerWidget> {
     _stopwatch = Stopwatch();
   }
 
-  void _startTimer() {
-    setState(() {
-      _isRunning = true;
-      _stopwatch.start();
-      _isWalkCompleted = false;
-    });
+  // FirebaseAuth 인스턴스를 사용하여 로그인 상태 확인
+  void _checkLoginStatus() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // 로그인이 안 되어 있으면 커스텀 SnackBar로 메시지 표시
+      _showCustomSnackBar("로그인 후 타이머 기능을 사용할 수 있습니다.", Colors.red);
+    }
+  }
 
-    Future.delayed(const Duration(milliseconds: 100), _updateTimer);
+  void _startTimer() {
+    _checkLoginStatus(); // 로그인 상태 체크
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _isRunning = true;
+        _stopwatch.start();
+        _isWalkCompleted = false;
+      });
+      Future.delayed(const Duration(milliseconds: 100), _updateTimer);
+    }
   }
 
   void _stopTimer() {
@@ -49,11 +63,16 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 
   void _resetTimer() {
-    setState(() {
-      _duration = Duration.zero;
-      _stopwatch.reset();
-      _isWalkCompleted = false;
-    });
+    _checkLoginStatus(); // 로그인 상태 체크
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _duration = Duration.zero;
+        _stopwatch.reset();
+        _isWalkCompleted = false;
+      });
+    }
   }
 
   void _completeWalk() {
@@ -62,8 +81,6 @@ class _TimerWidgetState extends State<TimerWidget> {
       _isWalkCompleted = false;
       _resetTimer();
     });
-
-
     _showCustomSnackBar("산책이 완료되었습니다!", Colors.green);
   }
 
