@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:geolocator/geolocator.dart';
 import '../widget/dog_health_hospital_map.dart';
 import '../widget/dog_health_record.dart';
 import '../widget/navigator.dart';
@@ -26,7 +25,6 @@ class _DogHealthPageState extends State<DogHealthPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _getCurrentLocation();
   }
 
   @override
@@ -35,29 +33,8 @@ class _DogHealthPageState extends State<DogHealthPage>
     super.dispose();
   }
 
-  Future<void> _getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.deniedForever) return;
-    }
 
-    if (permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always) {
-      Position position = await Geolocator.getCurrentPosition(
-        // ignore: deprecated_member_use
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-      setState(() {
-        latitude = position.latitude;
-        longitude = position.longitude;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,11 +65,7 @@ class _DogHealthPageState extends State<DogHealthPage>
           HealthRecordWidget(
 
           ),
-          HospitalMap(
-            latitude: latitude,
-            longitude: longitude,
-            mapControllerCompleter: mapControllerCompleter,
-          ),
+          HospitalMap(),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
