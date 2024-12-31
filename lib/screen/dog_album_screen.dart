@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '../photoListProvider.dart';
 
+
+
 class AlbumPage extends ConsumerStatefulWidget {
   const AlbumPage({super.key});
 
@@ -16,13 +18,16 @@ class _AlbumPageState extends ConsumerState<AlbumPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final notifier = ref.read(photoListProvider.notifier);
-      if (ref.read(isLoadingProvider)) { // 처음 로드 시만 실행
-        await notifier.loadPhotos();
-        ref.read(isLoadingProvider.notifier).state = false;
+      final photoList = ref.read(photoListProvider);
+      if (photoList.isEmpty) { // 사진 리스트가 비어 있을 때만 로드
+        ref.read(isLoadingProvider.notifier).state = true; // 로딩 시작
+        await ref.read(photoListProvider.notifier).loadPhotos(); // 사진 로드
+        ref.read(isLoadingProvider.notifier).state = false; // 로딩 종료
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {

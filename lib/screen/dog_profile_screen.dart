@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../photoListProvider.dart';
 import '../widget/custom_snackbar.dart';
 import '../widget/edit_profile_dialog.dart';
 import '../widget/navigator.dart';
 import 'login_screen.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget { // 변경
   const ProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  ConsumerState<ProfilePage> createState() => _ProfilePageState(); // 변경
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends ConsumerState<ProfilePage> {
   int _currentIndex = 3;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -224,6 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   } else {
                     // 로그아웃 수행
                     _auth.signOut().then((_) {
+                      ref.read(photoListProvider.notifier).reset();
                       setState(() {});
                       CustomSnackBar.show(
                         context,
