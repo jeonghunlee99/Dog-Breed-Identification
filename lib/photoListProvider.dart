@@ -9,7 +9,6 @@ final photoListProvider = StateNotifierProvider<PhotoListNotifier, List<String>>
 
 // 로딩 상태 관리 (StateProvider)
 final isLoadingProvider = StateProvider<bool>((ref) => false);
-final hasLoadedProvider = StateProvider<bool>((ref) => false);
 
 // 사진 리스트 상태를 관리하는 Notifier
 class PhotoListNotifier extends StateNotifier<List<String>> {

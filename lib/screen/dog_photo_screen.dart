@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import 추가
+
 import '../photoListProvider.dart';
 import '../widget/custom_snackbar.dart';
 
@@ -65,7 +66,7 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
       // 업로드한 이미지의 다운로드 URL을 가져옵니다.
       final photoUrl = await storageChildRef.getDownloadURL();
 
-      // `photoListProvider`의 `notifier`를 사용하여 사진 목록에 추가
+      // photoListProvider의 notifier를 사용하여 사진 목록에 추가
       final photoListNotifier = ref.read(photoListProvider.notifier);  // WidgetRef에서 read 사용
       await photoListNotifier.addPhoto(photoUrl);
 
