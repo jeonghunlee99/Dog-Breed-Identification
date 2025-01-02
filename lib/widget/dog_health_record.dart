@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-
+import 'package:intl/intl.dart';
 import 'custom_snackbar.dart';
+import 'dog_health_record_dialog.dart';
+
 
 class HealthRecordWidget extends StatefulWidget {
   const HealthRecordWidget({super.key});
@@ -47,20 +48,39 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
     });
   }
 
+  DateTime parseDate(String dateStr) {
+    try {
+      // 'yyyy-MM-dd' 형식으로 날짜를 변환
+      return DateFormat('yyyy-MM-dd').parse(dateStr);
+    } catch (e) {
+      // 오류가 발생하면 기본 현재 날짜로 처리
+      return DateTime.now();
+    }
+  }
+
   List<Map<String, String>> _sortRecords(
       List<Map<String, String>> records, SortOption sortOption) {
     switch (sortOption) {
       case SortOption.byNewest:
-        records.sort((a, b) => b['date']!.compareTo(a['date']!));
+        records.sort((a, b) {
+          DateTime dateA = parseDate(a['date']!); // 날짜 포맷 처리
+          DateTime dateB = parseDate(b['date']!); // 날짜 포맷 처리
+          return dateB.compareTo(dateA); // 최신 순으로 비교
+        });
         break;
       case SortOption.byOldest:
-        records.sort((a, b) => a['date']!.compareTo(b['date']!));
+        records.sort((a, b) {
+          DateTime dateA = parseDate(a['date']!); // 날짜 포맷 처리
+          DateTime dateB = parseDate(b['date']!); // 날짜 포맷 처리
+          return dateA.compareTo(dateB); // 오래된 순으로 비교
+        });
         break;
       case SortOption.byAdded:
-        break;
+        break; // 추가된 순서는 그대로 두기
     }
     return records;
   }
+
 
   Future<void> _deleteHealthRecord(String date, String memo) async {
     final User? user = FirebaseAuth.instance.currentUser;
@@ -162,117 +182,9 @@ class _HealthRecordWidgetState extends State<HealthRecordWidget> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  TextEditingController memoController =
-                      TextEditingController();
-
-                  return StatefulBuilder(
-                    builder:
-                        (BuildContext context, StateSetter setDialogState) {
-                      return AlertDialog(
-                        title: const Text(
-                          '날짜와 메모 추가',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 20),
-                        content: SingleChildScrollView(
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SfCalendar(
-                                  todayHighlightColor: Colors.transparent,
-                                  todayTextStyle: const TextStyle(
-                                      color: Color.fromARGB(255, 68, 140, 255)),
-                                  view: CalendarView.month,
-                                  showNavigationArrow: true,
-                                  initialSelectedDate: DateTime.now(),
-                                  onTap: (details) {
-                                    setDialogState(() {
-                                      selectedDate = details.date;
-                                      if (selectedDate != null) {
-                                        dateText =
-                                            '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}';
-                                      }
-                                    });
-                                  },
-                                  selectionDecoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 68, 140, 255),
-                                        width: 2),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(4)),
-                                    shape: BoxShape.rectangle,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextField(
-                                  controller: memoController,
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    labelText: '메모 입력',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.black),
-                                    errorText: errorText,
-                                  ),
-                                  style: const TextStyle(
-                                      fontSize: 16, color: Colors.black),
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.done,
-                                  cursorColor: Colors.black,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              if (memoController.text.isEmpty) {
-                                setDialogState(() {
-                                  setState(() {
-                                    errorText = '메모를 입력해주세요.';
-                                  });
-                                });
-                              } else {
-                                _saveHealthRecord(
-                                    dateText, memoController.text);
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            child: const Text(
-                              '확인',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text(
-                              '취소',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      );
+                  return HealthRecordDialog(
+                    onSave: (date, memo) {
+                      _saveHealthRecord(date, memo);
                     },
                   );
                 },
