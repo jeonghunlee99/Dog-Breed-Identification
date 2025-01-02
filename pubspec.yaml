@@ -54,6 +54,7 @@ dependencies:
   media_scanner: ^2.1.0
   cached_network_image: ^3.4.1
   path_provider: ^2.1.5
+  intl: ^0.19.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
