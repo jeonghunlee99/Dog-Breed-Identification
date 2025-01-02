@@ -16,7 +16,7 @@ enum SortOption { byAdded, byNewest, byOldest }
 
 class _HealthRecordWidgetState extends State<HealthRecordWidget> {
   DateTime? selectedDate;
-  String dateText = '날짜 선택';
+  String dateText = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'; // 오늘 날짜로 초기화
   String? errorText;
   SortOption _sortOption = SortOption.byAdded;
 
