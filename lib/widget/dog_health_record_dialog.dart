@@ -2,23 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-// HealthRecordState 정의
-class HealthRecordState {
-  final String date;
-  final String memo;
-
-  HealthRecordState({
-    required this.date,
-    required this.memo,
-  });
-}
 
 // 상태 관리용 StateProvider 정의
 final selectedDateProvider = StateProvider<String>((ref) => '');
 final memoProvider = StateProvider<String>((ref) => '');
 final errorTextProvider = StateProvider<String?>((ref) => null);
-final healthRecordProvider =
-    StateProvider<List<HealthRecordState>>((ref) => []);
 
 class HealthRecordDialog extends ConsumerStatefulWidget {
   final void Function(String date, String memo) onSave;
@@ -34,6 +22,7 @@ class _HealthRecordDialogState extends ConsumerState<HealthRecordDialog> {
   void resultValue() {
     ref.read(selectedDateProvider.notifier).state = '';
     ref.read(memoProvider.notifier).state = '';
+    ref.read(errorTextProvider.notifier).state = null;
   }
 
   @override
@@ -122,16 +111,6 @@ class _HealthRecordDialogState extends ConsumerState<HealthRecordDialog> {
             } else if (memo.isEmpty) {
               ref.read(errorTextProvider.notifier).state = '메모를 입력해주세요.';
             } else {
-              final newRecord = HealthRecordState(
-                date: selectedDate,
-                memo: memo,
-              );
-
-              // 상태 업데이트
-              ref.read(healthRecordProvider.notifier).state = [
-                ...ref.read(healthRecordProvider),
-                newRecord,
-              ];
               resultValue();
               widget.onSave(selectedDate, memo);
               Navigator.of(context).pop();
@@ -144,8 +123,9 @@ class _HealthRecordDialogState extends ConsumerState<HealthRecordDialog> {
         ),
         TextButton(
           onPressed: () {
+            resultValue();
             Navigator.of(context).pop();
-          },
+            },
           child: const Text(
             '취소',
             style: TextStyle(color: Colors.black, fontSize: 16),

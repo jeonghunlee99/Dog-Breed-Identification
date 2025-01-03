@@ -11,28 +11,50 @@ enum SortOption { byAdded, byNewest, byOldest }
 // SortOption 상태를 관리하기 위한 Riverpod StateProvider
 final sortOptionProvider = StateProvider<SortOption>((ref) => SortOption.byAdded);
 
-class HealthRecordWidget extends ConsumerWidget {
+// HealthRecord 상태를 관리하기 위한 Riverpod StateProvider
+final healthRecordProvider = StateProvider<List<HealthRecordState>>((ref) => []);
+
+class HealthRecordState {
+  final String date;
+  final String memo;
+
+  HealthRecordState({required this.date, required this.memo});
+}
+
+class HealthRecordWidget extends ConsumerStatefulWidget {
   const HealthRecordWidget({Key? key}) : super(key: key);
 
-  Stream<List<Map<String, String>>> _getHealthRecords() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return Stream.value([]);
-    }
+  @override
+  _HealthRecordWidgetState createState() => _HealthRecordWidgetState();
+}
 
-    return FirebaseFirestore.instance.collection('dogs').doc(user.uid).snapshots().map((snapshot) {
-      if (snapshot.exists) {
-        final data = snapshot.data();
+class _HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
+  @override
+  void initState() {
+    super.initState();
+    _loadHealthRecords();
+  }
+
+  Future<void> _loadHealthRecords() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final userDoc = await FirebaseFirestore.instance.collection('dogs').doc(user.uid).get();
+      if (userDoc.exists) {
+        final data = userDoc.data();
         final healthRecords = data?['health'] as List<dynamic>? ?? [];
-        return healthRecords.map((record) {
-          return {
-            'date': record['date']?.toString() ?? '',
-            'memo': record['memo']?.toString() ?? '',
-          };
+        final parsedRecords = healthRecords.map<HealthRecordState>((record) {
+          return HealthRecordState(
+            date: record['date']?.toString() ?? '',
+            memo: record['memo']?.toString() ?? '',
+          );
         }).toList();
+        ref.read(healthRecordProvider.notifier).state = parsedRecords;
       }
-      return [];
-    });
+    } catch (e) {
+      debugPrint('Error loading health records: $e');
+    }
   }
 
   DateTime _parseDate(String dateStr) {
@@ -43,13 +65,13 @@ class HealthRecordWidget extends ConsumerWidget {
     }
   }
 
-  List<Map<String, String>> _sortRecords(List<Map<String, String>> records, SortOption sortOption) {
+  List<HealthRecordState> _sortRecords(List<HealthRecordState> records, SortOption sortOption) {
     switch (sortOption) {
       case SortOption.byNewest:
-        records.sort((a, b) => _parseDate(b['date']!).compareTo(_parseDate(a['date']!)));
+        records.sort((a, b) => _parseDate(b.date).compareTo(_parseDate(a.date)));
         break;
       case SortOption.byOldest:
-        records.sort((a, b) => _parseDate(a['date']!).compareTo(_parseDate(b['date']!)));
+        records.sort((a, b) => _parseDate(a.date).compareTo(_parseDate(b.date)));
         break;
       case SortOption.byAdded:
         break; // 그대로 유지
@@ -77,6 +99,11 @@ class HealthRecordWidget extends ConsumerWidget {
           {'date': date, 'memo': memo},
         ]),
       });
+
+      ref.read(healthRecordProvider.notifier).state = [
+        ...ref.read(healthRecordProvider),
+        HealthRecordState(date: date, memo: memo),
+      ];
 
       CustomSnackBar.show(
         parentContext,
@@ -109,6 +136,12 @@ class HealthRecordWidget extends ConsumerWidget {
           {'date': date, 'memo': memo},
         ]),
       });
+
+      ref.read(healthRecordProvider.notifier).state = ref
+          .read(healthRecordProvider)
+          .where((record) => record.date != date || record.memo != memo)
+          .toList();
+
       CustomSnackBar.show(context, message: '건강 기록이 삭제되었습니다.', backgroundColor: Colors.red, icon: Icons.check_circle);
     } catch (e) {
       CustomSnackBar.show(context, message: '오류가 발생했습니다: $e', backgroundColor: Colors.red, icon: Icons.error);
@@ -116,8 +149,9 @@ class HealthRecordWidget extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final sortOption = ref.watch(sortOptionProvider);
+    final healthRecords = _sortRecords(ref.watch(healthRecordProvider), sortOption);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -135,7 +169,7 @@ class HealthRecordWidget extends ConsumerWidget {
                 context: context,
                 builder: (dialogContext) {
                   return HealthRecordDialog(
-                    onSave: (date, memo) => _saveHealthRecord(context, date, memo), // 부모 context 전달
+                    onSave: (date, memo) => _saveHealthRecord(context, date, memo),
                   );
                 },
               );
@@ -169,53 +203,37 @@ class HealthRecordWidget extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 10),
-          StreamBuilder<List<Map<String, String>>>(
-            stream: _getHealthRecords(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              }
-
-              var records = snapshot.data ?? [];
-              records = _sortRecords(records, sortOption);
-
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: records.length,
-                itemBuilder: (context, index) {
-                  final record = records[index];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: healthRecords.length,
+            itemBuilder: (context, index) {
+              final record = healthRecords[index];
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text('${record['date']}: ${record['memo']}'),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteHealthRecord(context, record['date']!, record['memo']!),
-                        ),
-                      ],
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text('${record.date}: ${record.memo}'),
                     ),
-                  );
-                },
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _deleteHealthRecord(context, record.date, record.memo),
+                    ),
+                  ],
+                ),
               );
             },
           ),
