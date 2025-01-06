@@ -8,6 +8,10 @@ import '../widget/edit_profile_dialog.dart';
 import '../widget/navigator.dart';
 import 'login_screen.dart';
 
+final dogNameProvider = StateProvider<String>((ref) => '');
+final dogBreedProvider = StateProvider<String>((ref) => '');
+final dogAgeProvider = StateProvider<String>((ref) => '');
+
 class ProfilePage extends ConsumerStatefulWidget { // 변경
   const ProfilePage({super.key});
 
@@ -21,11 +25,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // 강아지 정보 //
-  String dogName = "로딩 중...";
-  String dogBreed = "로딩 중...";
-  String dogAge = "로딩 중....";
-
   @override
   void initState() {
     super.initState();
@@ -38,18 +37,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       try {
         final doc = await _firestore.collection('dogs').doc(user.uid).get();
         if (doc.exists) {
-          setState(() {
-            dogName = doc['name'] ?? '알 수 없음';
-            dogBreed = doc['breed'] ?? '알 수 없음';
-            dogAge = doc['age'] ?? '알 수 없음';
-          });
+          ref.read(dogNameProvider.notifier).state = doc['name'] ?? '알 수 없음';
+          ref.read(dogBreedProvider.notifier).state = doc['breed'] ?? '알 수 없음';
+          ref.read(dogAgeProvider.notifier).state = doc['age'] ?? '알 수 없음';
         } else {
-          // 문서가 없을 경우 기본값 표시
-          setState(() {
-            dogName = "정보 없음";
-            dogBreed = "정보 없음";
-            dogAge = "정보 없음";
-          });
+          ref.read(dogNameProvider.notifier).state = '정보 없음';
+          ref.read(dogBreedProvider.notifier).state = '정보 없음';
+          ref.read(dogAgeProvider.notifier).state = '정보 없음';
         }
       } catch (e) {
         print('Firestore 데이터 가져오기 실패: $e');
@@ -59,7 +53,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final User? currentUser = _auth.currentUser;
+    final dogName = ref.watch(dogNameProvider);
+    final dogBreed = ref.watch(dogBreedProvider);
+    final dogAge = ref.watch(dogAgeProvider);
+    final currentUser = _auth.currentUser;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -91,65 +89,65 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 borderRadius: BorderRadius.circular(30),
                 child: currentUser == null
                     ? Stack(
+                  children: [
+                    Image.asset(
+                      'asset/dog_profile_card.png',
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset(
-                            'asset/dog_profile_card.png',
-                            height: 150,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Center(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "로그인을 하고 프로필을 설정하세요!",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Stack(
-                        children: [
-                          Image.asset(
-                            'asset/dog_profile_card.png',
-                            height: 150,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            bottom: 35,
-                            left: 16,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "강아지 이름: $dogName",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  "품종: $dogBreed\n나이: $dogAge",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+                          Text(
+                            "로그인을 하고 프로필을 설정하세요!",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.black,
                             ),
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                )
+                    : Stack(
+                  children: [
+                    Image.asset(
+                      'asset/dog_profile_card.png',
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      bottom: 35,
+                      left: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "강아지 이름: $dogName",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            "품종: $dogBreed\n나이: $dogAge",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -250,7 +248,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(vertical: 14, horizontal: 150),
+                  const EdgeInsets.symmetric(vertical: 14, horizontal: 150),
                   elevation: 10,
                 ),
                 child: Text(
@@ -282,23 +280,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       context: context,
       builder: (context) {
         return EditProfileDialog(
-          initialDogName: dogName,
-          initialDogBreed: dogBreed,
-          initialDogAge: dogAge,
+          initialDogName: ref.read(dogNameProvider),
+          initialDogBreed: ref.read(dogBreedProvider),
+          initialDogAge: ref.read(dogAgeProvider),
           onNameChanged: (newName) {
-            setState(() {
-              dogName = newName;
-            });
+            ref.read(dogNameProvider.notifier).state = newName;
           },
           onBreedChanged: (newBreed) {
-            setState(() {
-              dogBreed = newBreed;
-            });
+            ref.read(dogBreedProvider.notifier).state = newBreed;
           },
           onAgeChanged: (newAge) {
-            setState(() {
-              dogAge = newAge;
-            });
+            ref.read(dogAgeProvider.notifier).state = newAge;
           },
         );
       },
