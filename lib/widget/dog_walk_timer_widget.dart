@@ -1,90 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // FirebaseAuth 사용
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TimerWidget extends StatefulWidget {
+import '../screen/data/dog_walk_data.dart';
+
+
+
+class TimerWidget extends ConsumerWidget {
   final void Function(Duration duration) onWalkComplete;
 
   const TimerWidget({super.key, required this.onWalkComplete});
 
-  @override
-  State<TimerWidget> createState() => _TimerWidgetState();
-}
-
-class _TimerWidgetState extends State<TimerWidget> {
-  Duration _duration = Duration.zero;
-  bool _isRunning = false;
-  bool _isWalkCompleted = false;
-  late final Stopwatch _stopwatch;
-
-  @override
-  void initState() {
-    super.initState();
-    _stopwatch = Stopwatch();
-  }
-
-  // FirebaseAuth 인스턴스를 사용하여 로그인 상태 확인
-  void _checkLoginStatus() {
+  void _checkLoginStatus(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      // 로그인이 안 되어 있으면 커스텀 SnackBar로 메시지 표시
-      _showCustomSnackBar("로그인 후 타이머 기능을 사용할 수 있습니다.", Colors.red);
+      _showCustomSnackBar(
+        context,
+        "로그인 후 타이머 기능을 사용할 수 있습니다.",
+        Colors.red,
+      );
     }
   }
 
-  void _startTimer() {
-    _checkLoginStatus(); // 로그인 상태 체크
+  void _startTimer(BuildContext context, WidgetRef ref) {
+    _checkLoginStatus(context);
 
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      setState(() {
-        _isRunning = true;
-        _stopwatch.start();
-        _isWalkCompleted = false;
-      });
-      Future.delayed(const Duration(milliseconds: 100), _updateTimer);
+      ref.read(isRunningProvider.notifier).state = true;
+      _updateTimer(context, ref);
     }
   }
 
-  void _stopTimer() {
-    setState(() {
-      _isRunning = false;
-      _stopwatch.stop();
-      _isWalkCompleted = true;
-    });
+  void _stopTimer(WidgetRef ref) {
+    ref.read(isRunningProvider.notifier).state = false;
+    ref.read(isWalkCompletedProvider.notifier).state = true;
   }
 
-  void _updateTimer() {
-    if (_isRunning) {
-      setState(() {
-        _duration = _stopwatch.elapsed;
-      });
-      Future.delayed(const Duration(milliseconds: 100), _updateTimer);
-    }
-  }
-
-  void _resetTimer() {
-    _checkLoginStatus(); // 로그인 상태 체크
+  void _resetTimer(BuildContext context, WidgetRef ref) {
+    _checkLoginStatus(context);
 
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      setState(() {
-        _duration = Duration.zero;
-        _stopwatch.reset();
-        _isWalkCompleted = false;
-      });
+      ref.read(durationProvider.notifier).state = Duration.zero;
+      ref.read(isWalkCompletedProvider.notifier).state = false;
     }
   }
 
-  void _completeWalk() {
-    widget.onWalkComplete(_duration);
-    setState(() {
-      _isWalkCompleted = false;
-      _resetTimer();
-    });
-    _showCustomSnackBar("산책이 완료되었습니다!", Colors.green);
+  void _updateTimer(BuildContext context, WidgetRef ref) async {
+    if (ref.read(isRunningProvider)) {
+      final stopwatch = Stopwatch()..start();
+      await Future.delayed(const Duration(milliseconds: 100));
+      ref.read(durationProvider.notifier).state += stopwatch.elapsed;
+      stopwatch.stop();
+      _updateTimer(context, ref);
+    }
   }
 
-  void _showCustomSnackBar(String message, Color backgroundColor) {
+  void _completeWalk(BuildContext context, WidgetRef ref) {
+    final duration = ref.read(durationProvider);
+    onWalkComplete(duration);
+    ref.read(isWalkCompletedProvider.notifier).state = false;
+    _resetTimer(context, ref);
+    _showCustomSnackBar(context, "산책이 완료되었습니다!", Colors.green);
+  }
+
+  void _showCustomSnackBar(BuildContext context, String message, Color backgroundColor) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -114,12 +95,16 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final duration = ref.watch(durationProvider);
+    final isRunning = ref.watch(isRunningProvider);
+    final isWalkCompleted = ref.watch(isWalkCompletedProvider);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "산책 시간: ${_duration.inMinutes}:${(_duration.inSeconds % 60).toString().padLeft(2, '0')}",
+          "산책 시간: ${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}",
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
@@ -130,9 +115,9 @@ class _TimerWidgetState extends State<TimerWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.brown[400],
               ),
-              onPressed: _isRunning ? _stopTimer : _startTimer,
+              onPressed: isRunning ? () => _stopTimer(ref) : () => _startTimer(context, ref),
               child: Text(
-                _isRunning ? '중지' : '시작',
+                isRunning ? '중지' : '시작',
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -141,7 +126,7 @@ class _TimerWidgetState extends State<TimerWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.brown[400],
               ),
-              onPressed: _resetTimer,
+              onPressed: () => _resetTimer(context, ref),
               child: const Text(
                 '초기화',
                 style: TextStyle(color: Colors.white),
@@ -152,11 +137,11 @@ class _TimerWidgetState extends State<TimerWidget> {
         const SizedBox(height: 16),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: _isWalkCompleted ? Colors.green : Colors.grey,
+            backgroundColor: isWalkCompleted ? Colors.green : Colors.grey,
           ),
-          onPressed: _isRunning ? null : (_isWalkCompleted ? _completeWalk : null), // 시작 중이거나 완료되지 않으면 비활성화
+          onPressed: isRunning ? null : (isWalkCompleted ? () => _completeWalk(context, ref) : null),
           child: Text(
-            _isWalkCompleted ? '산책 완료' : '산책 완료',
+            isWalkCompleted ? '산책 완료' : '산책 완료',
             style: const TextStyle(color: Colors.white),
           ),
         ),
