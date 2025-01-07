@@ -30,9 +30,13 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   late TextEditingController _nameController;
   late TextEditingController _breedController;
   late TextEditingController _ageController;
+  late String _tempName;
+  late String _tempBreed;
+  late String _tempAge;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final _formKey = GlobalKey<FormState>(); // 폼 키 추가
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -40,6 +44,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     _nameController = TextEditingController(text: widget.initialDogName);
     _breedController = TextEditingController(text: widget.initialDogBreed);
     _ageController = TextEditingController(text: widget.initialDogAge);
+
+    // 임시 상태 초기화
+    _tempName = widget.initialDogName;
+    _tempBreed = widget.initialDogBreed;
+    _tempAge = widget.initialDogAge;
   }
 
   @override
@@ -51,9 +60,8 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   }
 
   Future<void> _saveToFirestore() async {
-    // 유효성 검사 실행
     if (!_formKey.currentState!.validate()) {
-      return; // 입력이 올바르지 않으면 저장하지 않음
+      return;
     }
 
     final User? currentUser = _auth.currentUser;
@@ -66,22 +74,24 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
     final String uid = currentUser.uid;
     final data = {
-      'name': _nameController.text,
-      'breed': _breedController.text,
-      'age': _ageController.text,
+      'name': _tempName,
+      'breed': _tempBreed,
+      'age': _tempAge,
     };
 
     try {
       await _firestore.collection('dogs').doc(uid).get().then((doc) {
         if (doc.exists) {
-          // update >> 현재 정보에 업데이트
           _firestore.collection('dogs').doc(uid).update(data);
         } else {
-          // set >> 문서가 없으면 dogs 컬렉션에 현재 uid로 된 문서 추가
           _firestore.collection('dogs').doc(uid).set(data);
         }
       });
 
+      // 상태 업데이트
+      widget.onNameChanged(_tempName);
+      widget.onBreedChanged(_tempBreed);
+      widget.onAgeChanged(_tempAge);
 
       CustomSnackBar.show(
         context,
@@ -89,7 +99,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         backgroundColor: Colors.green,
         icon: Icons.check_circle,
       );
-
 
       Navigator.pop(context);
     } catch (e) {
@@ -100,15 +109,14 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         ),
       );
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('프로필 수정'),
-      content: SingleChildScrollView( // 추가
-        child: Form( // 폼 위젯 추가
+      content: SingleChildScrollView(
+        child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -118,16 +126,18 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 decoration: InputDecoration(
                   labelText: '강아지 이름',
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // 포커스 시 경계선 색상
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // 비활성화 상태 경계선 색상
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  labelStyle: TextStyle(color: Colors.black), // 레이블 색상
-                  focusColor: Colors.black, // 포커스 색상
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusColor: Colors.black,
                 ),
-                cursorColor: Colors.black, // 커서 색상 설정
-                onChanged: widget.onNameChanged,
+                cursorColor: Colors.black,
+                onChanged: (value) {
+                  _tempName = value; // 임시 상태 업데이트
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '강아지 이름을 입력해주세요.';
@@ -141,16 +151,18 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 decoration: InputDecoration(
                   labelText: '품종',
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // 포커스 시 경계선 색상
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // 비활성화 상태 경계선 색상
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  labelStyle: TextStyle(color: Colors.black), // 레이블 색상
-                  focusColor: Colors.black, // 포커스 색상
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusColor: Colors.black,
                 ),
-                cursorColor: Colors.black, // 커서 색상 설정
-                onChanged: widget.onBreedChanged,
+                cursorColor: Colors.black,
+                onChanged: (value) {
+                  _tempBreed = value; // 임시 상태 업데이트
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '강아지 품종을 입력해주세요.';
@@ -164,17 +176,19 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 decoration: InputDecoration(
                   labelText: '나이',
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // 포커스 시 경계선 색상
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // 비활성화 상태 경계선 색상
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  labelStyle: TextStyle(color: Colors.black), // 레이블 색상
-                  focusColor: Colors.black, // 포커스 색상
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusColor: Colors.black,
                 ),
-                cursorColor: Colors.black, // 커서 색상 설정
+                cursorColor: Colors.black,
                 keyboardType: TextInputType.number,
-                onChanged: widget.onAgeChanged,
+                onChanged: (value) {
+                  _tempAge = value; // 임시 상태 업데이트
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '강아지 나이를 입력해주세요.';
@@ -192,13 +206,13 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       actions: [
         TextButton(
           onPressed: () async {
-            await _saveToFirestore(); // 유효성 검사 후 저장
+            await _saveToFirestore();
           },
           child: const Text('저장', style: TextStyle(color: Colors.black)),
         ),
         TextButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // 다이얼로그 닫기
           },
           child: const Text('취소', style: TextStyle(color: Colors.black)),
         ),
