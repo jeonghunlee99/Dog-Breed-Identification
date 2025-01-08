@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widget/dog_health_hospital_map.dart';
 import '../widget/dog_health_record.dart';
 import '../widget/navigator.dart';
 
-class DogHealthPage extends StatefulWidget {
+class DogHealthPage extends ConsumerStatefulWidget {
   const DogHealthPage({super.key});
 
   @override
-  State<DogHealthPage> createState() => _DogHealthPageState();
+  ConsumerState<DogHealthPage> createState() => DogHealthPageState();
 }
 
-class _DogHealthPageState extends State<DogHealthPage>
+class DogHealthPageState extends ConsumerState<DogHealthPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final Completer<NaverMapController> mapControllerCompleter = Completer();
@@ -25,6 +26,9 @@ class _DogHealthPageState extends State<DogHealthPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(currentIndexProvider.notifier).state = 1;
+    });
   }
 
   @override
@@ -38,6 +42,8 @@ class _DogHealthPageState extends State<DogHealthPage>
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -68,14 +74,7 @@ class _DogHealthPageState extends State<DogHealthPage>
           HospitalMap(),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

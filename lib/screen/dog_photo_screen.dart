@@ -18,10 +18,19 @@ class DogPhotoPage extends ConsumerStatefulWidget {
 }
 
 class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
-  int _currentIndex = 2;
   final List<File> _photos = [];
   final ImagePicker _picker = ImagePicker();
   File? _backgroundImage;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // currentIndexProvider 값을 안전하게 설정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(currentIndexProvider.notifier).state = 2;
+    });
+  }
 
   // 로그인 상태 체크
   void _checkLoginStatus(VoidCallback onSuccess) {
@@ -67,19 +76,17 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
       final photoUrl = await storageChildRef.getDownloadURL();
 
       // photoListProvider의 notifier를 사용하여 사진 목록에 추가
-      final photoListNotifier = ref.read(photoListProvider.notifier);  // WidgetRef에서 read 사용
+      final photoListNotifier = ref.read(photoListProvider.notifier); // WidgetRef에서 read 사용
       await photoListNotifier.addPhoto(photoUrl);
 
       _showCustomSnackBar('사진 업로드 완료!', Colors.green);
 
       // 최신 사진 목록을 로드합니다.
       await photoListNotifier.loadPhotos();
-
     } catch (e) {
       _showCustomSnackBar('업로드 실패: $e', Colors.red);
     }
   }
-
 
   void _openAlbum() {
     _checkLoginStatus(() {
@@ -184,14 +191,7 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }
