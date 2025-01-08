@@ -6,7 +6,6 @@ import '../widget/dog_walk_stats_widget.dart';
 import '../widget/dog_walk_timer_widget.dart';
 import '../widget/navigator.dart';
 
-
 class DogWalkPage extends ConsumerStatefulWidget {
   const DogWalkPage({super.key});
 
@@ -23,8 +22,15 @@ class _DogWalkPageState extends ConsumerState<DogWalkPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // 초기화 시 데이터 로드
     ref.read(walkStatsProvider.notifier).fetchWalkStats();
     ref.read(walkEventsProvider.notifier).fetchWalkEvents();
+
+    // currentIndexProvider를 빌드 후 설정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(currentIndexProvider.notifier).state = 0;
+    });
   }
 
   @override
@@ -83,14 +89,7 @@ class _DogWalkPageState extends ConsumerState<DogWalkPage>
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }

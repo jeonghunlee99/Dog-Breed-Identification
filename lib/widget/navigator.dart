@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../screen/dog_health_screen.dart';
 import '../screen/dog_photo_screen.dart';
 import '../screen/dog_profile_screen.dart';
 import '../screen/dog_walk_screen.dart';
 import '../screen/homepage.dart';
 
-class CustomBottomNavBar extends StatefulWidget {
-  final int currentIndex;
-  final Function(int) onTap;
+final currentIndexProvider = StateProvider<int>((ref) => 0);
 
-  const CustomBottomNavBar({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-  });
+
+
+class CustomBottomNavBar extends ConsumerWidget {
+  const CustomBottomNavBar({Key? key}) : super(key: key);
 
   @override
-  CustomBottomNavBarState createState() => CustomBottomNavBarState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 현재 인덱스를 구독
+    final currentIndex = ref.watch(currentIndexProvider);
 
-class CustomBottomNavBarState extends State<CustomBottomNavBar> {
-
-
-  @override
-  Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 95,
@@ -48,7 +42,8 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  _createPageRoute(HomePage()), (route) => false,
+                  _createPageRoute(HomePage()),
+                      (route) => false,
                 );
               },
             ),
@@ -59,11 +54,15 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                buildIconWithText('asset/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
-                buildIconWithText('asset/dog_information.png', '강아지 건강', 1, const DogHealthPage()),
+                buildIconWithText(
+                    context, ref, 'asset/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
+                buildIconWithText(
+                    context, ref, 'asset/dog_information.png', '강아지 건강', 1, const DogHealthPage()),
                 Container(width: MediaQuery.of(context).size.width * 0.20),
-                buildIconWithText('asset/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
-                buildIconWithText('asset/dog_profile2321.png', '강아지 프로필', 3, const ProfilePage()),
+                buildIconWithText(
+                    context, ref, 'asset/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
+                buildIconWithText(
+                    context, ref, 'asset/dog_profile2321.png', '강아지 프로필', 3, const ProfilePage()),
               ],
             ),
           ),
@@ -72,13 +71,17 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
     );
   }
 
-  Widget buildIconWithText(String imagePath, String text, int index, Widget targetPage) {
+  Widget buildIconWithText(BuildContext context, WidgetRef ref, String imagePath, String text,
+      int index, Widget targetPage) {
+    // StateProvider에 접근
+    final currentNotifier = ref.read(currentIndexProvider.notifier);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
           onTap: () {
-            widget.onTap(index);
+            currentNotifier.state = index; // 상태 변경
             Navigator.pushAndRemoveUntil(
               context,
               _createPageRoute(targetPage),
@@ -108,7 +111,9 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
         Text(
           text,
           style: TextStyle(
-            color: widget.currentIndex == index ? Colors.black : Colors.black54,
+            color: ref.watch(currentIndexProvider) == index
+                ? Colors.black
+                : Colors.black54,
             fontSize: 12,
           ),
         ),
@@ -121,7 +126,6 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-
         var fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animation);
         return FadeTransition(opacity: fadeAnimation, child: child);
       },

@@ -24,7 +24,6 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  int _currentIndex = 3;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -32,6 +31,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void initState() {
     super.initState();
     _fetchDogProfile();
+
+    // currentIndexProvider를 안전하게 설정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(currentIndexProvider.notifier).state = 3;
+    });
   }
 
   Future<void> _fetchDogProfile() async {
@@ -155,14 +159,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 

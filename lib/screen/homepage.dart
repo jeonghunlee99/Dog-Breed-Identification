@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
-
-import '../widget/dog_information_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widget/dog_category_widget.dart';
 import '../widget/navigator.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 4;
+class HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // initState에서 currentIndexProvider를 4로 설정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(currentIndexProvider.notifier).state = 4;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,17 +29,17 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(30),
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage('asset/dog.gif'),
             fit: BoxFit.cover,
           ),
         ),
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
               child: Center(
                 child: Text(
                   '카테고리',
@@ -43,7 +51,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -51,44 +59,26 @@ class _HomePageState extends State<HomePage> {
                   imagePath: 'asset/dog_image.png',
                   title: '소형 강아지',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DogInformationPage(category: '소형'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/smallDogs');
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/dog_image2.png',
                   title: '중형 강아지',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DogInformationPage(category: '중형'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/mediumDogs');
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/big_dog.png',
                   title: '대형 강아지',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DogInformationPage(category: '대형'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/largeDogs');
                   },
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -96,39 +86,21 @@ class _HomePageState extends State<HomePage> {
                   imagePath: 'asset/longdog.png',
                   title: '장모종',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DogInformationPage(category: '장모종'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/longHairDogs');
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/shortdog.png',
                   title: '단모종',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DogInformationPage(category: '단모종'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/shortHairDogs');
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/dog_rank.png',
                   title: 'IQ 순위',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DogInformationPage(category: 'IQ 순위'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/iqRanking');
                   },
                 ),
               ],
@@ -136,14 +108,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }
