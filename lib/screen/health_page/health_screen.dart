@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widget/dog_health_hospital_map.dart';
-import '../widget/dog_health_record.dart';
-import '../widget/navigator.dart';
+import 'health_hospital_map.dart';
+import '../../widget/navigator.dart';
+import 'health_memo_screen/health_memo_page.dart';
 
 class DogHealthPage extends ConsumerStatefulWidget {
   const DogHealthPage({super.key});
@@ -19,7 +19,7 @@ class DogHealthPageState extends ConsumerState<DogHealthPage>
   final Completer<NaverMapController> mapControllerCompleter = Completer();
   double? latitude;
   double? longitude;
-  int _currentIndex = 1;
+
 
 
   @override
