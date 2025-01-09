@@ -1,8 +1,11 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../widget/custom_snackbar.dart';
+import 'dog_walk_data.dart';
 
-/// WalkStats 상태 관리
 class WalkStatsNotifier extends StateNotifier<Map<DateTime, Duration>> {
   WalkStatsNotifier() : super({});
 
@@ -57,7 +60,7 @@ class WalkStatsNotifier extends StateNotifier<Map<DateTime, Duration>> {
   }
 }
 
-/// WalkEvents 상태 관리
+
 class WalkEventsNotifier extends StateNotifier<Map<DateTime, List<String>>> {
   WalkEventsNotifier() : super({});
 
@@ -112,15 +115,83 @@ class WalkEventsNotifier extends StateNotifier<Map<DateTime, List<String>>> {
   }
 }
 
-/// Provider 선언
-final walkStatsProvider =
-StateNotifierProvider<WalkStatsNotifier, Map<DateTime, Duration>>(
-        (ref) => WalkStatsNotifier());
-final walkEventsProvider =
-StateNotifierProvider<WalkEventsNotifier, Map<DateTime, List<String>>>(
-        (ref) => WalkEventsNotifier());
-final selectedDayProvider = StateProvider<DateTime>((ref) => DateTime.now());
+class TimerController {
+  static void checkLoginStatus(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // 로그인되지 않은 경우 에러 메시지를 표시
+      CustomSnackBar.show(
+        context,
+        message: '로그인 후 해당 기능을 사용할 수 있습니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
+    }
+  }
 
-final durationProvider = StateProvider<Duration>((ref) => Duration.zero);
-final isRunningProvider = StateProvider<bool>((ref) => false);
-final isWalkCompletedProvider = StateProvider<bool>((ref) => false);
+  static void startTimer(BuildContext context, WidgetRef ref) {
+    checkLoginStatus(context);
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      ref.read(isRunningProvider.notifier).state = true;
+      updateTimer(context, ref);
+    }
+  }
+
+  static void stopTimer(WidgetRef ref) {
+    ref.read(isRunningProvider.notifier).state = false;
+    ref.read(isWalkCompletedProvider.notifier).state = true;
+  }
+
+  static void resetTimer(BuildContext context, WidgetRef ref) {
+    checkLoginStatus(context);
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      ref.read(durationProvider.notifier).state = Duration.zero;
+      ref.read(isWalkCompletedProvider.notifier).state = false;
+    }
+  }
+
+  static Future<void> updateTimer(BuildContext context, WidgetRef ref) async {
+    if (ref.read(isRunningProvider)) {
+      final stopwatch = Stopwatch()..start();
+      await Future.delayed(const Duration(milliseconds: 100));
+      ref.read(durationProvider.notifier).state += stopwatch.elapsed;
+      stopwatch.stop();
+      updateTimer(context, ref);
+    }
+  }
+
+  static void completeWalk(BuildContext context, WidgetRef ref, void Function(Duration duration) onWalkComplete) {
+    final duration = ref.read(durationProvider);
+    onWalkComplete(duration);
+    ref.read(isWalkCompletedProvider.notifier).state = false;
+    resetTimer(context, ref);
+    CustomSnackBar.show(
+      context,
+      message: '산책이 완료되었습니다!',
+      backgroundColor: Colors.green,
+      icon: Icons.check_circle,
+    );
+  }
+}
+
+class LoginStatus {
+  static void checkLoginStatus(BuildContext context, Function onSuccess) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      CustomSnackBar.show(
+        context,
+        message: '로그인 후 산책 기록을 추가할 수 있습니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
+    } else {
+      onSuccess();
+    }
+  }
+}
+
+
