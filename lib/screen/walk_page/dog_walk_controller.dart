@@ -107,12 +107,16 @@ class WalkEventsNotifier extends StateNotifier<Map<DateTime, List<String>>> {
 
   void addWalkRecord(DateTime date) {
     final normalizedDate = DateTime(date.year, date.month, date.day);
+    final currentCount = (state[normalizedDate]?.length ?? 0);
+    final newCount = currentCount + 1;
     state = {
       ...state,
-      normalizedDate: [...(state[normalizedDate] ?? []), '산책 ${state[normalizedDate]?.length ?? 0 + 1}회'],
+      normalizedDate: [...(state[normalizedDate] ?? []), '산책 $newCount 회'],
     };
+
     updateWalkEventsToFirestore();
   }
+
 }
 
 class TimerController {
