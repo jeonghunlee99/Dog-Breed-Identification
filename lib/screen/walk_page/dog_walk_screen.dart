@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'data/dog_walk_data.dart';
-import '../widget/dog_walk_record_widget.dart';
-import '../widget/dog_walk_stats_widget.dart';
-import '../widget/dog_walk_timer_widget.dart';
-import '../widget/navigator.dart';
+import 'dog_walk_data.dart';
+import 'dog_tabbar.dart';
+
+import '../../widget/navigator.dart';
 
 class DogWalkPage extends ConsumerStatefulWidget {
   const DogWalkPage({super.key});
@@ -16,18 +15,13 @@ class DogWalkPage extends ConsumerStatefulWidget {
 class _DogWalkPageState extends ConsumerState<DogWalkPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-
-    // 초기화 시 데이터 로드
     ref.read(walkStatsProvider.notifier).fetchWalkStats();
     ref.read(walkEventsProvider.notifier).fetchWalkEvents();
-
-    // currentIndexProvider를 빌드 후 설정
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(currentIndexProvider.notifier).state = 0;
     });
