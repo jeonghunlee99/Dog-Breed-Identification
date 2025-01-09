@@ -134,9 +134,12 @@ class StatsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final combinedEntries = <DateTime, Map<String, dynamic>>{};
+
+    // walkStats와 walkEvents를 결합
     walkStats.forEach((date, duration) {
       combinedEntries[date] = {"duration": duration, "events": []};
     });
+
     walkEvents.forEach((date, events) {
       if (combinedEntries[date] != null) {
         combinedEntries[date]!["events"] = events;
@@ -144,6 +147,7 @@ class StatsWidget extends StatelessWidget {
         combinedEntries[date] = {"duration": null, "events": events};
       }
     });
+
     final sortedEntries = combinedEntries.entries.toList()
       ..sort((a, b) => b.key.compareTo(a.key)); // 최신 날짜가 위에 오도록 정렬
 
@@ -155,6 +159,9 @@ class StatsWidget extends StatelessWidget {
         final date = entry.key;
         final duration = entry.value["duration"] as Duration?;
         final events = entry.value["events"] as List<String>;
+
+        // 마지막 회차만 표시
+        final lastEvent = events.isNotEmpty ? events.last : null;
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -175,11 +182,11 @@ class StatsWidget extends StatelessWidget {
                     "산책 시간: ${duration.inMinutes}분 ${duration.inSeconds % 60}초",
                     style: const TextStyle(fontSize: 14, color: Colors.blue),
                   ),
-                if (events.isNotEmpty) // 일반 기록이 있을 경우
-                  ...events.map((event) => Text(
-                    event,
+                if (lastEvent != null) // 마지막 회차만 표시
+                  Text(
+                    lastEvent,
                     style: const TextStyle(fontSize: 14),
-                  )),
+                  ),
               ],
             ),
           ),
@@ -188,6 +195,7 @@ class StatsWidget extends StatelessWidget {
     );
   }
 }
+
 
 class TimerWidget extends ConsumerWidget {
   final void Function(Duration duration) onWalkComplete;
