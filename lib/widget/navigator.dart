@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../screen/dog_health_screen.dart';
+import '../screen/health_page/health_screen.dart';
 import '../screen/dog_photo_screen.dart';
 import '../screen/dog_profile_screen.dart';
-import '../screen/dog_walk_screen.dart';
+import '../screen/walk_page/dog_walk_screen.dart';
 import '../screen/homepage.dart';
 
 final currentIndexProvider = StateProvider<int>((ref) => 0);
@@ -15,8 +15,6 @@ class CustomBottomNavBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 현재 인덱스를 구독
-    final currentIndex = ref.watch(currentIndexProvider);
 
     return SizedBox(
       width: MediaQuery.of(context).size.width,
