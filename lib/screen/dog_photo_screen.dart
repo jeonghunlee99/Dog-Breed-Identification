@@ -10,6 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import 추�
 import '../photoListProvider.dart';
 import '../widget/custom_snackbar.dart';
 
+final photosProvider = StateProvider<List<File>>((ref) => []);
+final backgroundImageProvider = StateProvider<File?>((ref) => null);
+
 class DogPhotoPage extends ConsumerStatefulWidget {
   const DogPhotoPage({super.key});
 
@@ -18,7 +21,6 @@ class DogPhotoPage extends ConsumerStatefulWidget {
 }
 
 class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
-  final List<File> _photos = [];
   final ImagePicker _picker = ImagePicker();
   File? _backgroundImage;
 
@@ -26,7 +28,6 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
   void initState() {
     super.initState();
 
-    // currentIndexProvider 값을 안전하게 설정
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(currentIndexProvider.notifier).state = 2;
     });
@@ -46,12 +47,13 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
     _checkLoginStatus(() async {
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
-        setState(() {
-          _photos.add(File(pickedFile.path));
-        });
+        final photoFile = File(pickedFile.path);
 
-        // ref를 사용하여 상태에 접근
-        await _uploadImageToStorage(ref, File(pickedFile.path)); // ref 사용
+        // StateProvider를 사용하여 사진 추가
+        ref.read(photosProvider.notifier).update((state) => [...state, photoFile]);
+
+        // Firebase Storage에 업로드
+        await _uploadImageToStorage(ref, photoFile);
       }
     });
   }
@@ -69,20 +71,14 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
           'dog_photos/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
       final storageChildRef = storageRef.child(fileName);
 
-      // 이미지 파일을 Firebase Storage에 업로드
       await storageChildRef.putFile(imageFile);
 
-      // 업로드한 이미지의 다운로드 URL을 가져옵니다.
       final photoUrl = await storageChildRef.getDownloadURL();
-
-      // photoListProvider의 notifier를 사용하여 사진 목록에 추가
-      final photoListNotifier = ref.read(photoListProvider.notifier); // WidgetRef에서 read 사용
-      await photoListNotifier.addPhoto(photoUrl);
+      await ref.read(photoListProvider.notifier).addPhoto(photoUrl);
 
       _showCustomSnackBar('사진 업로드 완료!', Colors.green);
 
-      // 최신 사진 목록을 로드합니다.
-      await photoListNotifier.loadPhotos();
+      await ref.read(photoListProvider.notifier).loadPhotos();
     } catch (e) {
       _showCustomSnackBar('업로드 실패: $e', Colors.red);
     }
@@ -158,6 +154,7 @@ class _DogPhotoPageState extends ConsumerState<DogPhotoPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
