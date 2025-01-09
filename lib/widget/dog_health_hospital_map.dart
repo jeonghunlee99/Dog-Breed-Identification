@@ -1,23 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
-class HospitalMap extends StatefulWidget {
+final latitudeProvider = StateProvider<double?>((ref) => null);
+final longitudeProvider = StateProvider<double?>((ref) => null);
 
-
-  const HospitalMap({
-    super.key,
-
-  });
+class HospitalMap extends ConsumerStatefulWidget {
+  const HospitalMap({super.key});
 
   @override
-  State<HospitalMap> createState() => _HospitalMapState();
+  ConsumerState<HospitalMap> createState() => _HospitalMapState();
 }
 
-
-class _HospitalMapState extends State<HospitalMap> {
-
+class _HospitalMapState extends ConsumerState<HospitalMap> {
   final Completer<NaverMapController> mapControllerCompleter = Completer();
   double? latitude;
   double? longitude;
@@ -31,7 +28,6 @@ class _HospitalMapState extends State<HospitalMap> {
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
@@ -51,66 +47,67 @@ class _HospitalMapState extends State<HospitalMap> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      if (!mounted) return; // 위젯이 트리에서 제거되었는지 확인
-
-      setState(() {
-        latitude = position.latitude;
-        longitude = position.longitude;
-      });
+      ref.read(latitudeProvider.notifier).state = position.latitude;
+      ref.read(longitudeProvider.notifier).state = position.longitude;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final latitude = ref.watch(latitudeProvider);
+    final longitude = ref.watch(longitudeProvider);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: latitude == null || longitude == null
-            ? const Center(child: CircularProgressIndicator())
-        //     : NaverMap(
-        //   options: const NaverMapViewOptions(
-        //     indoorEnable: true,
-        //     locationButtonEnable: false,
-        //     consumeSymbolTapEvents: false,
-        //   ),
-        //   onMapReady: (controller) async {
-        //     mapControllerCompleter.complete(controller);
-        //
-        //     final cameraPosition = NCameraPosition(
-        //       target: NLatLng(latitude!, longitude!),
-        //       zoom: 15,
-        //       bearing: 45,
-        //       tilt: 30,
-        //     );
-        //
-        //     await controller.updateCamera(
-        //         NCameraUpdate.fromCameraPosition(cameraPosition));
-        //
-        //     final cameraUpdate = NCameraUpdate.scrollAndZoomTo(
-        //       target: NLatLng(latitude!, longitude!),
-        //       zoom: 18,
-        //     );
-        //
-        //     cameraUpdate.setAnimation(
-        //       animation: NCameraAnimation.fly,
-        //       duration: const Duration(seconds: 2),
-        //     );
-        //
-        //     await controller.updateCamera(cameraUpdate);
-        //   },
-        // ),
-        :Text('data')
-      ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: latitude == null || longitude == null
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              //     : NaverMap(
+              //   options: const NaverMapViewOptions(
+              //     indoorEnable: true,
+              //     locationButtonEnable: false,
+              //     consumeSymbolTapEvents: false,
+              //   ),
+              //   onMapReady: (controller) async {
+              //     mapControllerCompleter.complete(controller);
+              //
+              //     final cameraPosition = NCameraPosition(
+              //       target: NLatLng(latitude!, longitude!),
+              //       zoom: 15,
+              //       bearing: 45,
+              //       tilt: 30,
+              //     );
+              //
+              //     await controller.updateCamera(
+              //         NCameraUpdate.fromCameraPosition(cameraPosition));
+              //
+              //     final cameraUpdate = NCameraUpdate.scrollAndZoomTo(
+              //       target: NLatLng(latitude!, longitude!),
+              //       zoom: 18,
+              //     );
+              //
+              //     cameraUpdate.setAnimation(
+              //       animation: NCameraAnimation.fly,
+              //       duration: const Duration(seconds: 2),
+              //     );
+              //
+              //     await controller.updateCamera(cameraUpdate);
+              //   },
+              // ),
+              : Text('data')),
     );
   }
 }
