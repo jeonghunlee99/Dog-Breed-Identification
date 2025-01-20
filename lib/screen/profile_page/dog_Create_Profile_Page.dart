@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../widget/custom_snackbar.dart';
-import 'homepage.dart';
+import '../../widget/custom_snackbar.dart';
+import '../homepage.dart';
 
 
-class DogStartProfilePage extends StatefulWidget {
-  const DogStartProfilePage({super.key});
+class DogCreateProfilePage extends StatefulWidget {
+  const DogCreateProfilePage({super.key});
 
   @override
-  State<DogStartProfilePage> createState() => _DogStartProfileState();
+  State<DogCreateProfilePage> createState() => _DogCreateProfilePageState();
 }
 
-class _DogStartProfileState extends State<DogStartProfilePage> {
+class _DogCreateProfilePageState extends State<DogCreateProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dogNameController = TextEditingController();
   final TextEditingController _dogBreedController = TextEditingController();
@@ -181,6 +181,4 @@ class _DogStartProfileState extends State<DogStartProfilePage> {
       ),
     );
   }
-
-
 }
