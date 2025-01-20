@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../screen/health_page/health_screen.dart';
 import '../screen/dog_photo_screen.dart';
-import '../screen/dog_profile_screen.dart';
+import '../screen/profile_page/profile_screen/profile.page.dart';
+import '../screen/profile_page/profile_screen/profile_controller.dart';
 import '../screen/walk_page/dog_walk_screen.dart';
 import '../screen/homepage.dart';
 
