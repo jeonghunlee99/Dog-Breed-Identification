@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../widget/custom_snackbar.dart';
+import 'edit_profile_data.dart';
 
-import 'custom_snackbar.dart';
 
-class EditProfileDialog extends StatefulWidget {
+class EditProfileDialog extends ConsumerStatefulWidget {
   final String initialDogName;
   final String initialDogBreed;
   final String initialDogAge;
@@ -23,19 +23,14 @@ class EditProfileDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EditProfileDialogState createState() => _EditProfileDialogState();
+  ConsumerState<EditProfileDialog> createState() => _EditProfileDialogState();
 }
 
-class _EditProfileDialogState extends State<EditProfileDialog> {
+class _EditProfileDialogState extends ConsumerState<EditProfileDialog> {
   late TextEditingController _nameController;
   late TextEditingController _breedController;
   late TextEditingController _ageController;
-  late String _tempName;
-  late String _tempBreed;
-  late String _tempAge;
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -44,11 +39,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     _nameController = TextEditingController(text: widget.initialDogName);
     _breedController = TextEditingController(text: widget.initialDogBreed);
     _ageController = TextEditingController(text: widget.initialDogAge);
-
-    // 임시 상태 초기화
-    _tempName = widget.initialDogName;
-    _tempBreed = widget.initialDogBreed;
-    _tempAge = widget.initialDogAge;
   }
 
   @override
@@ -57,58 +47,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     _breedController.dispose();
     _ageController.dispose();
     super.dispose();
-  }
-
-  Future<void> _saveToFirestore() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final User? currentUser = _auth.currentUser;
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('사용자가 로그인되어 있지 않습니다.')),
-      );
-      return;
-    }
-
-    final String uid = currentUser.uid;
-    final data = {
-      'name': _tempName,
-      'breed': _tempBreed,
-      'age': _tempAge,
-    };
-
-    try {
-      await _firestore.collection('dogs').doc(uid).get().then((doc) {
-        if (doc.exists) {
-          _firestore.collection('dogs').doc(uid).update(data);
-        } else {
-          _firestore.collection('dogs').doc(uid).set(data);
-        }
-      });
-
-      // 상태 업데이트
-      widget.onNameChanged(_tempName);
-      widget.onBreedChanged(_tempBreed);
-      widget.onAgeChanged(_tempAge);
-
-      CustomSnackBar.show(
-        context,
-        message: '저장 완료!',
-        backgroundColor: Colors.green,
-        icon: Icons.check_circle,
-      );
-
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('저장 실패: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 
   @override
@@ -136,7 +74,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 ),
                 cursorColor: Colors.black,
                 onChanged: (value) {
-                  _tempName = value; // 임시 상태 업데이트
+                  widget.onNameChanged(value);
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -161,7 +99,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 ),
                 cursorColor: Colors.black,
                 onChanged: (value) {
-                  _tempBreed = value; // 임시 상태 업데이트
+                  widget.onBreedChanged(value);
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -187,7 +125,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 cursorColor: Colors.black,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  _tempAge = value; // 임시 상태 업데이트
+                  widget.onAgeChanged(value);
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -206,7 +144,31 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       actions: [
         TextButton(
           onPressed: () async {
-            await _saveToFirestore();
+            if (_formKey.currentState?.validate() ?? false) {
+              final model = ProfileModel();
+              try {
+                await model.saveProfile(
+                  _nameController.text,
+                  _breedController.text,
+                  _ageController.text,
+                );
+
+                CustomSnackBar.show(
+                  context,
+                  message: '저장 완료!',
+                  backgroundColor: Colors.green,
+                  icon: Icons.check_circle,
+                );
+                Navigator.pop(context);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('저장 실패: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
           },
           child: const Text('저장', style: TextStyle(color: Colors.black)),
         ),
