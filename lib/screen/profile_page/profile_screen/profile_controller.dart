@@ -4,7 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../photoListProvider.dart';
+import '../../album_page/album_screen/album_data.dart';
+
+
+
+
+
 
 class ProfileController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
