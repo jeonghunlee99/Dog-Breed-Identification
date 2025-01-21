@@ -5,7 +5,6 @@ import '../health_add_memo_dialog/health_memo_add_dialog_page.dart';
 import 'health_memo_controller.dart';
 import 'health_memo_data.dart';
 
-
 class HealthRecordWidget extends ConsumerStatefulWidget {
   const HealthRecordWidget({super.key});
 
@@ -15,7 +14,6 @@ class HealthRecordWidget extends ConsumerStatefulWidget {
 
 class HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
   late HealthMemoController healthMemoController;
-
 
   @override
   void initState() {
@@ -44,7 +42,7 @@ class HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
               showDialog(
                 context: context,
                 builder: (dialogContext) {
-                  return HealthRecordDialog();
+                  return const HealthRecordDialog();
                 },
               );
             },
@@ -61,19 +59,74 @@ class HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
                 '기록 리스트:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              DropdownButton<SortOption>(
-                value: sortOption,
-                onChanged: (newOption) {
-                  if (newOption != null) {
-                    ref.read(sortOptionProvider.notifier).state = newOption;
-                  }
+              MenuAnchor(
+                alignmentOffset: const Offset(20, 10),
+                builder: (context, controller, child) {
+                  return SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        elevation: 1,
+                        padding: const EdgeInsets.symmetric(vertical: 12), // 고정 높이 설정
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8), // 둥근 모서리
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // 정렬 텍스트
+                          Text(
+                            _getSortOptionText(sortOption).isEmpty
+                                ? '정렬 기준 선택'
+                                : _getSortOptionText(sortOption),
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                          const SizedBox(width: 8), // 텍스트와 아이콘 사이 여백
+                          // 드롭다운 화살표 아이콘
+                          AnimatedRotation(
+                            turns: controller.isOpen ? 0.5 : 0, // 메뉴가 열리면 화살표가 아래로 회전
+                            duration: const Duration(milliseconds: 200),
+                            child: const Icon(Icons.arrow_drop_down, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
-                items: const [
-                  DropdownMenuItem(value: SortOption.byAdded, child: Text('추가된 순서')),
-                  DropdownMenuItem(value: SortOption.byNewest, child: Text('최신 날짜 순')),
-                  DropdownMenuItem(value: SortOption.byOldest, child: Text('오래된 날짜 순')),
+                menuChildren: [
+                  MenuItemButton(
+                    onPressed: () {
+                      ref.read(sortOptionProvider.notifier).state = SortOption.byAdded;
+                    },
+                    child: const Text('추가된 순서'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      ref.read(sortOptionProvider.notifier).state = SortOption.byNewest;
+                    },
+                    child: const Text('최신 날짜 순'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      ref.read(sortOptionProvider.notifier).state = SortOption.byOldest;
+                    },
+                    child: const Text('오래된 날짜 순'),
+                  ),
                 ],
+                style: MenuStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.white),
+                ),
               ),
+
             ],
           ),
           const SizedBox(height: 10),
@@ -103,10 +156,14 @@ class HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
                       child: Text('${record.date}: ${record.memo}'),
                     ),
                     IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () async {
-                          await healthMemoController.deleteHealthRecord(context: context, date: record.memo, memo: record.date);
-                        }
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () async {
+                        await healthMemoController.deleteHealthRecord(
+                          context: context,
+                          date: record.memo,
+                          memo: record.date,
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -138,5 +195,18 @@ class HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
         break; // 그대로 유지
     }
     return records;
+  }
+
+  String _getSortOptionText(SortOption sortOption) {
+    switch (sortOption) {
+      case SortOption.byAdded:
+        return '추가된 순서';
+      case SortOption.byNewest:
+        return '최신 날짜 순';
+      case SortOption.byOldest:
+        return '오래된 날짜 순';
+      default:
+        return '정렬 기준 선택';
+    }
   }
 }
