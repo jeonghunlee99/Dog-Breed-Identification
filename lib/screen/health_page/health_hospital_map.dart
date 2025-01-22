@@ -7,6 +7,8 @@ import 'package:geolocator/geolocator.dart';
 final latitudeProvider = StateProvider<double?>((ref) => null);
 final longitudeProvider = StateProvider<double?>((ref) => null);
 
+
+
 class HospitalMap extends ConsumerStatefulWidget {
   const HospitalMap({super.key});
 
@@ -75,39 +77,41 @@ class _HospitalMapState extends ConsumerState<HospitalMap> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              //     : NaverMap(
-              //   options: const NaverMapViewOptions(
-              //     indoorEnable: true,
-              //     locationButtonEnable: false,
-              //     consumeSymbolTapEvents: false,
-              //   ),
-              //   onMapReady: (controller) async {
-              //     mapControllerCompleter.complete(controller);
-              //
-              //     final cameraPosition = NCameraPosition(
-              //       target: NLatLng(latitude!, longitude!),
-              //       zoom: 15,
-              //       bearing: 45,
-              //       tilt: 30,
-              //     );
-              //
-              //     await controller.updateCamera(
-              //         NCameraUpdate.fromCameraPosition(cameraPosition));
-              //
-              //     final cameraUpdate = NCameraUpdate.scrollAndZoomTo(
-              //       target: NLatLng(latitude!, longitude!),
-              //       zoom: 18,
-              //     );
-              //
-              //     cameraUpdate.setAnimation(
-              //       animation: NCameraAnimation.fly,
-              //       duration: const Duration(seconds: 2),
-              //     );
-              //
-              //     await controller.updateCamera(cameraUpdate);
-              //   },
-              // ),
-              : Text('data')),
+                  : NaverMap(
+                options: const NaverMapViewOptions(
+                  mapType: NMapType.terrain,
+                  indoorEnable: true,
+                  locationButtonEnable: !false,
+                  consumeSymbolTapEvents: false,
+                ),
+                onMapReady: (controller) async {
+                  mapControllerCompleter.complete(controller);
+
+                  final cameraPosition = NCameraPosition(
+                    target: NLatLng(latitude, longitude),
+                    zoom: 15,
+                    bearing: 45,
+                    tilt: 15,
+                  );
+
+                  await controller.updateCamera(
+                      NCameraUpdate.fromCameraPosition(cameraPosition));
+
+                  final cameraUpdate = NCameraUpdate.scrollAndZoomTo(
+                    target: NLatLng(latitude, longitude),
+                    zoom: 18,
+                  );
+
+                  cameraUpdate.setAnimation(
+                    animation: NCameraAnimation.fly,
+                    duration: const Duration(seconds: 2),
+                  );
+
+                  await controller.updateCamera(cameraUpdate);
+                },
+              ),
+              // : Text('data')),
+      )
     );
   }
 }
