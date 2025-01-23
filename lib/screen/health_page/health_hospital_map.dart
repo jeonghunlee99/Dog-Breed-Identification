@@ -7,8 +7,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../../widget/custom_circular.dart';
+
+
 final latitudeProvider = StateProvider<double?>((ref) => null);
 final longitudeProvider = StateProvider<double?>((ref) => null);
+final markersProvider = StateProvider<Set<Marker>>((ref) => {});
+final selectedAddressProvider = StateProvider<String>((ref) => '');
 
 class HospitalMap extends ConsumerStatefulWidget {
   const HospitalMap({super.key});
@@ -20,8 +25,6 @@ class HospitalMap extends ConsumerStatefulWidget {
 class _HospitalMapState extends ConsumerState<HospitalMap> {
 
   final Completer<GoogleMapController> mapControllerCompleter = Completer();
-  double? latitude;
-  double? longitude;
   String selectedAddress = '';
 
   TextEditingController addressController = TextEditingController();
@@ -33,7 +36,7 @@ class _HospitalMapState extends ConsumerState<HospitalMap> {
   void initState() {
     super.initState();
     addressController.text = '동물병원';
-    _searchAddress();  // 앱 시작 시 바로 검색되도록 호출
+    _searchAddress(); // 앱 시작 시 바로 검색되도록 호출
     _getCurrentLocation();
   }
 
@@ -53,61 +56,74 @@ class _HospitalMapState extends ConsumerState<HospitalMap> {
       if (permission == LocationPermission.deniedForever) return;
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      ref.read(latitudeProvider.notifier).state = position.latitude;
-      ref.read(longitudeProvider.notifier).state = position.longitude;
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      ref
+          .read(latitudeProvider.notifier)
+          .state = position.latitude;
+      ref
+          .read(longitudeProvider.notifier)
+          .state = position.longitude;
     }
   }
 
   Future<void> _searchAddress() async {
     try {
-      final coordinatesList = await getCoordinatesFromPlaceName(addressController.text);
-      setState(() {
-        markers.clear();  // 기존 마커를 지우고 새로 추가
-        for (var location in coordinatesList) {
-          markers.add(Marker(
-            markerId: MarkerId(location['place_name']),
-            position: LatLng(location['latitude'], location['longitude']),
-            infoWindow: InfoWindow(
-              title: location['place_name'],  // 병원 이름을 표시
-              snippet: '병원 위치',  // 선택적으로 설명 추가
-            ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),  // 검색 마커를 주황색으로 설정
-            onTap: () {
-              _animateToLocation(location['latitude'], location['longitude']);
-            },
-          ));
-        }
-      });
+      final coordinatesList = await getCoordinatesFromPlaceName(
+          addressController.text);
+      final markers = coordinatesList.map((location) {
+        return Marker(
+          markerId: MarkerId(location['place_name']),
+          position: LatLng(location['latitude'], location['longitude']),
+          infoWindow: InfoWindow(
+            title: location['place_name'],
+            snippet: '병원 위치',
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen),
+          onTap: () {
+            _animateToLocation(location['latitude'], location['longitude']);
+          },
+        );
+      }).toSet();
 
-      final GoogleMapController controller = await mapControllerCompleter.future;
-      // 첫 번째 위치로 카메라 이동
+      ref
+          .read(markersProvider.notifier)
+          .state = markers;
+
+      final GoogleMapController controller = await mapControllerCompleter
+          .future;
       if (coordinatesList.isNotEmpty) {
         controller.animateCamera(CameraUpdate.newLatLngZoom(
-          LatLng(coordinatesList[0]['latitude'], coordinatesList[0]['longitude']),
+          LatLng(
+              coordinatesList[0]['latitude'], coordinatesList[0]['longitude']),
           15,
         ));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('장소를 찾을 수 없습니다: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('장소를 찾을 수 없습니다: $e')));
     }
   }
 
-
   void _animateToLocation(double latitude, double longitude) async {
     final GoogleMapController controller = await mapControllerCompleter.future;
-    controller.animateCamera(CameraUpdate.newLatLngZoom(LatLng(latitude, longitude), 17));
+    controller.animateCamera(
+        CameraUpdate.newLatLngZoom(LatLng(latitude, longitude), 17));
   }
 
   void _handleTap(LatLng point) async {
     try {
-      final address = await getAddressFromCoordinates(point.latitude, point.longitude);
-      setState(() {
-        selectedAddress = address;
-      });
+      final address = await getAddressFromCoordinates(
+          point.latitude, point.longitude);
+      ref
+          .read(selectedAddressProvider.notifier)
+          .state = address;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('주소를 가져올 수 없습니다: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('주소를 가져올 수 없습니다: $e')));
     }
   }
 
@@ -115,6 +131,8 @@ class _HospitalMapState extends ConsumerState<HospitalMap> {
   Widget build(BuildContext context) {
     final latitude = ref.watch(latitudeProvider);
     final longitude = ref.watch(longitudeProvider);
+    final markers = ref.watch(markersProvider);
+    final selectedAddress = ref.watch(selectedAddressProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -131,22 +149,46 @@ class _HospitalMapState extends ConsumerState<HospitalMap> {
             ),
           ),
           const SizedBox(height: 16),
-          latitude == null || longitude == null
-              ? const Center(child: CircularProgressIndicator())
-              : Expanded(
-            child: GoogleMap(
-              mapType: MapType.terrain,
-              myLocationEnabled: true,  // 내 위치 표시 활성화
-              myLocationButtonEnabled: true,  // 내 위치 버튼 활성화
-              initialCameraPosition: CameraPosition(
-                target: LatLng(latitude, longitude),
-                zoom: 15,
-              ),
-              markers: markers,  // 검색된 마커들만 지도에 표시
-              onMapCreated: (GoogleMapController controller) {
-                mapControllerCompleter.complete(controller);
-              },
-              onTap: _handleTap, // 지도에서 위치를 탭하면 주소 표시
+          Expanded(
+            child: Stack(
+              children: [
+                // Google Map
+                if (latitude != null && longitude != null)
+                  GoogleMap(
+                    mapType: MapType.terrain,
+                    myLocationEnabled: true,
+                    // 내 위치 표시 활성화
+                    myLocationButtonEnabled: true,
+                    // 내 위치 버튼 활성화
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(latitude, longitude),
+                      zoom: 15,
+                    ),
+                    markers: markers,
+                    // 검색된 마커들만 지도에 표시
+                    onMapCreated: (GoogleMapController controller) {
+                      mapControllerCompleter.complete(controller);
+                    },
+                    onTap: _handleTap, // 지도에서 위치를 탭하면 주소 표시
+                  ),
+
+                // 로딩 인디케이터
+                if (latitude == null || longitude == null)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomCircularIndicator(),
+                        const SizedBox(height: 16),
+                        Text(
+                          '로딩 중입니다...',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
           if (selectedAddress.isNotEmpty)
@@ -206,3 +248,4 @@ Future<String> getAddressFromCoordinates(double latitude, double longitude) asyn
     throw Exception('Failed to load reverse geocoding data');
   }
 }
+
