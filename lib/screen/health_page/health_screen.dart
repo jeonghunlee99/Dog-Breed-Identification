@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'health_hospital_map.dart';
 import '../../widget/navigator.dart';
+import 'health_hospital_screen/helath_hospital_page.dart';
 import 'health_memo_screen/health_memo_page.dart';
 
 class DogHealthPage extends ConsumerStatefulWidget {
