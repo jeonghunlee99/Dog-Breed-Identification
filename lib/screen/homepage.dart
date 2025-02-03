@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widget/dog_category_widget.dart';
+import '../widget/dog_information_widget.dart';
 import '../widget/navigator.dart';
 
 
@@ -59,21 +60,39 @@ class HomePageState extends ConsumerState<HomePage> {
                   imagePath: 'asset/dog_image.png',
                   title: '소형 강아지',
                   onTap: () {
-                    Navigator.pushNamed(context, '/smallDogs');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) =>
+                        DogInformationPage(category: '소형'),
+                    )
+                    );
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/dog_image2.png',
                   title: '중형 강아지',
                   onTap: () {
-                    Navigator.pushNamed(context, '/mediumDogs');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) =>
+                        DogInformationPage(category: '중형'),
+                    )
+                    );
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/big_dog.png',
                   title: '대형 강아지',
                   onTap: () {
-                    Navigator.pushNamed(context, '/largeDogs');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DogInformationPage(category: '대형'),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -86,21 +105,38 @@ class HomePageState extends ConsumerState<HomePage> {
                   imagePath: 'asset/longdog.png',
                   title: '장모종',
                   onTap: () {
-                    Navigator.pushNamed(context, '/longHairDogs');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DogInformationPage(category: '장모종'),
+                      ),
+                    );
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/shortdog.png',
                   title: '단모종',
                   onTap: () {
-                    Navigator.pushNamed(context, '/shortHairDogs');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DogInformationPage(category: '단모종'),
+                      ),);
                   },
                 ),
                 DogCategoryWidget(
                   imagePath: 'asset/dog_rank.png',
                   title: 'IQ 순위',
                   onTap: () {
-                    Navigator.pushNamed(context, '/iqRanking');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DogInformationPage(category: 'IQ 순위'),
+                      ),
+                    );
                   },
                 ),
               ],
