@@ -35,13 +35,13 @@ class DogPhotoPage extends ConsumerWidget {
                 children: [
                   _buildActionContainer(
                     label: '사진 찍기',
-                    imagePath: 'asset/camera.png',
+                    imagePath: 'asset/album_page_image/camera.png',
                     onTap: () => controller.takePhoto(),
                   ),
                   const SizedBox(width: 40),
                   _buildActionContainer(
                     label: '앨범 열기',
-                    imagePath: 'asset/dog_album.jpeg',
+                    imagePath: 'asset/album_page_image/dog_album.jpeg',
                     onTap: () => controller.openAlbum(AlbumPage()),
                   ),
                 ],

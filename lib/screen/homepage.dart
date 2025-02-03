@@ -57,7 +57,7 @@ class HomePageState extends ConsumerState<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 DogCategoryWidget(
-                  imagePath: 'asset/dog_image.png',
+                  imagePath: 'asset/category_image/small_dog.png',
                   title: '소형 강아지',
                   onTap: () {
                     Navigator.push(
@@ -70,7 +70,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   },
                 ),
                 DogCategoryWidget(
-                  imagePath: 'asset/dog_image2.png',
+                  imagePath: 'asset/category_image/middle_dog.png',
                   title: '중형 강아지',
                   onTap: () {
                     Navigator.push(
@@ -83,7 +83,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   },
                 ),
                 DogCategoryWidget(
-                  imagePath: 'asset/big_dog.png',
+                  imagePath: 'asset/category_image/big_dog.png',
                   title: '대형 강아지',
                   onTap: () {
                     Navigator.push(
@@ -102,7 +102,7 @@ class HomePageState extends ConsumerState<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 DogCategoryWidget(
-                  imagePath: 'asset/longdog.png',
+                  imagePath: 'asset/category_image/longdog.png',
                   title: '장모종',
                   onTap: () {
                     Navigator.push(
@@ -115,7 +115,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   },
                 ),
                 DogCategoryWidget(
-                  imagePath: 'asset/shortdog.png',
+                  imagePath: 'asset/category_image/shortdog.png',
                   title: '단모종',
                   onTap: () {
                     Navigator.push(
@@ -127,7 +127,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   },
                 ),
                 DogCategoryWidget(
-                  imagePath: 'asset/dog_rank.png',
+                  imagePath: 'asset/category_image/dog_rank.png',
                   title: 'IQ 순위',
                   onTap: () {
                     Navigator.push(
