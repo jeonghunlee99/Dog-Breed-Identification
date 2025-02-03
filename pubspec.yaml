@@ -83,7 +83,9 @@ flutter:
   assets:
     - asset/dog_information.json
     - asset/config/.env
+    - asset/category_image/
     - asset/
+    - asset/album_page_image/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
