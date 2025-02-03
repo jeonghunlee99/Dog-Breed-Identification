@@ -86,6 +86,8 @@ flutter:
     - asset/category_image/
     - asset/
     - asset/album_page_image/
+    - asset/bottom_bar_image/
+    - asset/login_image/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

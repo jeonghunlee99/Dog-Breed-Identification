@@ -53,14 +53,14 @@ class CustomBottomNavBar extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 buildIconWithText(
-                    context, ref, 'asset/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
+                    context, ref, 'asset/bottom_bar_image/dog_walk.png', '강아지 산책', 0, const DogWalkPage()),
                 buildIconWithText(
-                    context, ref, 'asset/dog_information.png', '강아지 건강', 1, const DogHealthPage()),
+                    context, ref, 'asset/bottom_bar_image/dog_information.png', '강아지 건강', 1, const DogHealthPage()),
                 Container(width: MediaQuery.of(context).size.width * 0.20),
                 buildIconWithText(
-                    context, ref, 'asset/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
+                    context, ref, 'asset/bottom_bar_image/dog_photo.png', '강아지 앨범', 2, const DogPhotoPage()),
                 buildIconWithText(
-                    context, ref, 'asset/dog_profile2321.png', '강아지 프로필', 3, const ProfilePage()),
+                    context, ref, 'asset/bottom_bar_image/dog_profile.png', '강아지 프로필', 3, const ProfilePage()),
               ],
             ),
           ),

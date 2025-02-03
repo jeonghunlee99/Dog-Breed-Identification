@@ -90,14 +90,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         _controller.signInWithGoogle(_onLoginSuccess, _onLoginFailure);
                       },
-                      child: Image.asset('asset/google_sign.png', width: 200, height: 45, fit: BoxFit.cover),
+                      child: Image.asset('asset/login_image/google_sign.png', width: 200, height: 45, fit: BoxFit.cover),
                     ),
                     SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
                         _controller.signInWithKakao(_onLoginSuccess, _onLoginFailure);
                       },
-                      child: Image.asset('asset/kakao_login.png', width: 200, height: 45, fit: BoxFit.cover),
+                      child: Image.asset('asset/login_image/kakao_login.png', width: 200, height: 45, fit: BoxFit.cover),
                     ),
                   ],
                 ),
