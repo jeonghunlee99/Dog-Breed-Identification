@@ -141,6 +141,38 @@ class HomePageState extends ConsumerState<HomePage> {
                 ),
               ],
             ),
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                DogCategoryWidget(
+                  imagePath: 'asset/origin.jpg.png',
+                  title: '나라별 모음',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DogInformationPage(category: '나라별'),
+                      ),
+                    );
+                  },
+                ),
+                DogCategoryWidget(
+                  imagePath: 'asset/wait_image.png',
+                  title: '추가중 ...',
+                  onTap: () {
+
+                  },
+                ),
+                DogCategoryWidget(
+                  imagePath: 'asset/wait_image.png',
+                  title: '추가중 ...',
+                  onTap: () {
+
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
