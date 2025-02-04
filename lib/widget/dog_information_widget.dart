@@ -21,7 +21,7 @@ class DogInformationPage extends ConsumerStatefulWidget {
 }
 
 class _DogInformationPageState extends ConsumerState<DogInformationPage> {
-  String? selectedOrigin;
+  String? selectedOrigin = "러시아";
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +61,11 @@ class _DogInformationPageState extends ConsumerState<DogInformationPage> {
 
           return Column(
             children: [
-              if (widget.category == '나라별') // 나라별 필터 추가
+              if (widget.category == '나라별')
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: DropdownButton<String>(
-                    value: selectedOrigin,
-                    hint: const Text('나라 선택'),
+                    value: selectedOrigin, // 기본값 적용됨
                     isExpanded: true,
                     items: origins.map((origin) {
                       return DropdownMenuItem<String>(
