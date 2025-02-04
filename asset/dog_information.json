@@ -1,38 +1,41 @@
 [
   {
     "name": "골든 리트리버",
-    "image_url": "https://via.placeholder.com/150",
+    "image_url": "asset/wait_image.png",
     "description": "골든 리트리버는 친근하고 지능적인 품종으로 잘 알려져 있습니다. 가족들과 잘 어울리며 충성심이 강합니다.",
     "characteristics": {
       "size": "중형 , 대형",
       "temperament": "친근함, 충성심",
       "life_span": "10-12년",
-      "Coat" : "단모종",
+      "Coat": "단모종",
       "iqRank": 1
-    }
+    },
+    "origin": "영국"
   },
   {
     "name": "시베리안 허스키",
-    "image_url": "https://via.placeholder.com/150",
+    "image_url": "asset/wait_image.png",
     "description": "시베리안 허스키는 에너지가 넘치고 외향적인 성격으로 유명합니다. 두꺼운 털과 푸른 눈이 매력적입니다.",
     "characteristics": {
       "size": "중형",
       "temperament": "활발함, 외향적",
       "life_span": "12-14년",
-      "Coat" : "장모종",
+      "Coat": "장모종",
       "iqRank": 3
-    }
+    },
+    "origin": "러시아"
   },
   {
     "name": "푸들",
-    "image_url": "https://via.placeholder.com/150",
+    "image_url": "asset/wait_image.png",
     "description": "푸들은 높은 지능과 우아한 외모로 사랑받는 품종입니다. 다양한 크기(토이, 미니어처, 스탠다드)로 나뉩니다.",
     "characteristics": {
       "size": "소형,중형,대형",
       "temperament": "영리함, 활발함",
       "life_span": "12-15년",
-      "Coat" : "장모종",
+      "Coat": "장모종",
       "iqRank": 2
-    }
+    },
+    "origin": "프랑스"
   }
 ]
