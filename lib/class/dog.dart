@@ -11,6 +11,7 @@ class Dog {
   final String lifeSpan;
   final String coat;
   final int iqRank;
+  final String origin;
   Dog({
     required this.name,
     required this.imageUrl,
@@ -19,7 +20,8 @@ class Dog {
     required this.temperament,
     required this.lifeSpan,
     required this.coat,
-    required this.iqRank
+    required this.iqRank,
+    required this.origin
   });
 
   factory Dog.fromJson(Map<String, dynamic> json) {
@@ -31,7 +33,8 @@ class Dog {
       temperament: json['characteristics']['temperament'] ?? '성격 정보 없음',
       lifeSpan: json['characteristics']['life_span'] ?? '수명 정보 없음',
       coat: json['characteristics']['Coat'] ?? '코트 정보 없음',
-      iqRank: json['characteristics']['iqRank'] ?? 'iq 정보 없음'
+      iqRank: json['characteristics']['iqRank'] ?? 'iq 정보 없음',
+        origin: json['origin'] ?? '나라 정보 없음'
     );
   }
 }
