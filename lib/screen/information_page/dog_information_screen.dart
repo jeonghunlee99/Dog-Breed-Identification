@@ -12,6 +12,8 @@ class DogInformationPage extends ConsumerStatefulWidget {
 }
 
 class _DogInformationPageState extends ConsumerState<DogInformationPage> {
+  bool isListView = false;
+
   @override
   Widget build(BuildContext context) {
     final dogsAsyncValue = ref.watch(dogsProvider);
@@ -33,9 +35,11 @@ class _DogInformationPageState extends ConsumerState<DogInformationPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(isListView ? Icons.grid_view : Icons.list),
             onPressed: () {
-              // 검색 기능 추가 예정
+              setState(() {
+                isListView = !isListView;
+              });
             },
           ),
         ],
@@ -89,6 +93,28 @@ class _DogInformationPageState extends ConsumerState<DogInformationPage> {
               Expanded(
                 child: filteredDogs.isEmpty
                     ? const Center(child: Text('해당 카테고리에 데이터가 없습니다.'))
+                    : isListView
+                    ? ListView.builder(
+                  itemCount: filteredDogs.length,
+                  itemBuilder: (context, index) {
+                    final dog = filteredDogs[index];
+                    return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: dog.imageUrl.isNotEmpty
+                            ? Image.asset(
+                          dog.imageUrl,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        )
+                            : const Icon(Icons.pets, size: 50, color: Colors.grey),
+                      ),
+                      title: Text(dog.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      subtitle: Text('출신 나라: ${dog.origin}\nIQ 순위: ${dog.iqRank}위'),
+                    );
+                  },
+                )
                     : PageView.builder(
                   itemCount: filteredDogs.length,
                   itemBuilder: (context, index) {
