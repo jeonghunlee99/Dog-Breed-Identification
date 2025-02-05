@@ -2,7 +2,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao_use
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-import '../class/social_login.dart';
+import 'social_login.dart';
 
 class KakaoLogin implements SocialLogin {
   @override

@@ -8,11 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../widget/custom_snackbar.dart';
 import '../album_screen/album_data.dart';
 
-
-
-
-
-
 class DogPhotoController {
   final WidgetRef ref;
   final BuildContext context;
@@ -38,7 +33,9 @@ class DogPhotoController {
         final photoFile = File(pickedFile.path);
 
         // Add photo to StateProvider
-        ref.read(photosProvider.notifier).update((state) => [...state, photoFile]);
+        ref
+            .read(photosProvider.notifier)
+            .update((state) => [...state, photoFile]);
 
         // Upload to Firebase Storage
         await _uploadImageToStorage(photoFile);
@@ -86,7 +83,8 @@ class DogPhotoController {
 
   // Show custom snackbar
   void _showCustomSnackBar(String message, Color backgroundColor) {
-    final icon = backgroundColor == Colors.green ? Icons.check_circle : Icons.error;
+    final icon =
+        backgroundColor == Colors.green ? Icons.check_circle : Icons.error;
     CustomSnackBar.show(
       context,
       message: message,
@@ -95,4 +93,3 @@ class DogPhotoController {
     );
   }
 }
-
