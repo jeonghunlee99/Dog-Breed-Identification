@@ -9,6 +9,7 @@ final dogsProvider = FutureProvider<List<Dog>>((ref) async {
   final List<dynamic> data = json.decode(response);
   return data.map((json) => Dog.fromJson(json)).toList();
 });
+final selectedOriginProvider = StateProvider<String?>((ref) => "러시아");
 
 class DogInformationPage extends ConsumerStatefulWidget {
   final String category;
@@ -20,11 +21,12 @@ class DogInformationPage extends ConsumerStatefulWidget {
 }
 
 class _DogInformationPageState extends ConsumerState<DogInformationPage> {
-  String? selectedOrigin = "러시아";
+
 
   @override
   Widget build(BuildContext context) {
     final dogsAsyncValue = ref.watch(dogsProvider);
+    final selectedOrigin = ref.watch(selectedOriginProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -87,7 +89,7 @@ class _DogInformationPageState extends ConsumerState<DogInformationPage> {
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      selectedOrigin = origin;
+                                      ref.read(selectedOriginProvider.notifier).state = origin;
                                     });
                                   },
                                   child: SizedBox(
@@ -138,10 +140,10 @@ class _DogInformationPageState extends ConsumerState<DogInformationPage> {
                     itemBuilder: (context, index) {
                       final dog = filteredDogs[index];
                       return Card(
-                        color: Colors.white, // 🔹 카드 배경 흰색
+                        color: Colors.white,
                         margin: const EdgeInsets.all(10),
                         child: ListTile(
-                          tileColor: Colors.white, // 🔹 ListTile 배경 흰색
+                          tileColor: Colors.white,
                           leading: SizedBox(
                             width: 50,
                             height: 100,
