@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widget/dog_category_widget.dart';
-import '../widget/dog_information_widget.dart';
 import '../widget/navigator.dart';
+import 'information_page/dog_information_screen.dart';
 
 
 class HomePage extends ConsumerStatefulWidget {
