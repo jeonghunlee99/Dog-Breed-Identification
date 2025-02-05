@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../class/social_login.dart';
+import 'social_login.dart';
 
 class GoogleLogin implements SocialLogin {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;

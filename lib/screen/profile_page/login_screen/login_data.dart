@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../api/google_login.dart';
-import '../../../api/kakao_login.dart';
-
+import '../../../login/google_login.dart';
+import '../../../login/kakao_login.dart';
 
 class LoginModel {
   final GoogleLogin _googleLogin = GoogleLogin();

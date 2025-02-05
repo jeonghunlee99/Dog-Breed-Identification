@@ -3,8 +3,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'album_data.dart';
 
-
-
 class AlbumController {
   final WidgetRef ref;
 
@@ -32,15 +30,13 @@ class PhotoListNotifier extends StateNotifier<List<String>> {
   // 사진 URL 불러오기
   Future<void> loadPhotos() async {
     try {
-      ref
-          .read(isLoadingProvider.notifier)
-          .state = true; // 로딩 시작
+      ref.read(isLoadingProvider.notifier).state = true; // 로딩 시작
 
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not logged in');
 
-      final storageRef = FirebaseStorage.instance.ref().child(
-          'dog_photos/${user.uid}');
+      final storageRef =
+          FirebaseStorage.instance.ref().child('dog_photos/${user.uid}');
       final listResult = await storageRef.listAll();
 
       final urls = await Future.wait(
@@ -51,9 +47,7 @@ class PhotoListNotifier extends StateNotifier<List<String>> {
     } catch (e) {
       print('Error loading photos: $e');
     } finally {
-      ref
-          .read(isLoadingProvider.notifier)
-          .state = false; // 로딩 종료
+      ref.read(isLoadingProvider.notifier).state = false; // 로딩 종료
     }
   }
 
@@ -67,10 +61,7 @@ class PhotoListNotifier extends StateNotifier<List<String>> {
       if (user == null) throw Exception('User not logged in');
 
       final storageRef = FirebaseStorage.instance.ref().child(
-          'dog_photos/${user.uid}/${DateTime
-              .now()
-              .millisecondsSinceEpoch}.jpg');
-
+          'dog_photos/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
       // 새로운 사진 추가 후 상태 업데이트
     } catch (e) {
