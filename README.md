@@ -45,6 +45,8 @@ Google Maps API를 활용한 지도 기능 구현
 
 🚧 핵심 트러블 슈팅
 
+## **앱 실행 화면**
+
 ![Image](https://github.com/user-attachments/assets/ca5f80de-8361-4690-85fa-5d8c5739c3c3)
 ![Image](https://github.com/user-attachments/assets/795c7a93-5a46-4062-b07f-4bdee0d9f220)
 ![Image](https://github.com/user-attachments/assets/8554930a-24b9-4b48-a1dd-620e3054aa7f)
