@@ -159,9 +159,9 @@ class HealthRecordWidgetState extends ConsumerState<HealthRecordWidget> {
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
                         await healthMemoController.deleteHealthRecord(
-                          context: context,
-                          date: record.memo,
-                          memo: record.date,
+                          parentContext: context, // 정의된 매개변수 이름과 일치시킴
+                          date: record.date, // 올바른 순서로 매개변수 전달
+                          memo: record.memo,
                         );
                       },
                     ),
