@@ -158,8 +158,7 @@ class StatsWidget extends StatelessWidget {
         final entry = sortedEntries[index];
         final date = entry.key;
         final duration = entry.value["duration"] as Duration?;
-        final events = entry.value["events"] as List<String>;
-
+        final events = List<String>.from(entry.value["events"] as List);
         // 마지막 회차만 표시
         final lastEvent = events.isNotEmpty ? events.last : null;
 
