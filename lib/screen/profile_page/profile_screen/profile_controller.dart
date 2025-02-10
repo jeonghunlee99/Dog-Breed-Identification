@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../album_page/album_screen/album_data.dart';
+import '../../health_page/health_memo_screen/health_memo_data.dart';
 
 
 
@@ -56,6 +57,8 @@ class ProfileController {
       ref.invalidate(dogNameProvider);
       ref.invalidate(dogBreedProvider);
       ref.invalidate(dogAgeProvider);
+      ref.invalidate(healthRecordProvider);
+      ref.invalidate(sortOptionProvider);
       ref.read(photoListProvider.notifier).reset();
       onLogoutSuccess();
     } catch (error) {
