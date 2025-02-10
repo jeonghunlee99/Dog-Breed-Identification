@@ -35,31 +35,55 @@ class HealthMemoController{
       }
     }
   }
-
-  Future<void> deleteHealthRecord({required BuildContext context, required String date, required String memo}) async {
+  Future<void> deleteHealthRecord({
+    required BuildContext parentContext,
+    required String date,
+    required String memo,
+  }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      CustomSnackBar.show(context, message: '로그인이 필요합니다.', backgroundColor: Colors.red, icon: Icons.error);
+      CustomSnackBar.show(
+        parentContext,
+        message: '로그인이 필요합니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
       return;
     }
 
     try {
       final userDocRef = FirebaseFirestore.instance.collection('dogs').doc(user.uid);
 
+      // Firestore에서 데이터 삭제
       await userDocRef.update({
         'health': FieldValue.arrayRemove([
           {'date': date, 'memo': memo},
         ]),
       });
 
+      // UI에서 상태 업데이트
       ref.read(healthRecordProvider.notifier).state = ref
           .read(healthRecordProvider)
-          .where((record) => record.date != date || record.memo != memo)
+          .where((record) => !(record.date == date && record.memo == memo))
           .toList();
 
-      CustomSnackBar.show(context, message: '건강 기록이 삭제되었습니다.', backgroundColor: Colors.red, icon: Icons.check_circle);
+      // 성공 메시지 표시
+      CustomSnackBar.show(
+        parentContext,
+        message: '건강 기록이 삭제되었습니다.',
+        backgroundColor: Colors.red,
+        icon: Icons.check_circle,
+      );
     } catch (e) {
-      CustomSnackBar.show(context, message: '오류가 발생했습니다: $e', backgroundColor: Colors.red, icon: Icons.error);
+      // 에러 처리
+      CustomSnackBar.show(
+        parentContext,
+        message: '삭제 중 오류가 발생했습니다: $e',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
     }
   }
+
+
 }
