@@ -26,6 +26,7 @@ class HospitalMapController {
     if (permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always) {
       Position position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high,
       );
       ref.read(latitudeProvider.notifier).state = position.latitude;
