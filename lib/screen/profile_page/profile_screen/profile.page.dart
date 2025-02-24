@@ -23,6 +23,7 @@ class ProfilePage extends ConsumerWidget {
         backgroundColor: Colors.white,
         title: const Text('강아지 프로필'),
       ),
+      backgroundColor: Colors.white,
       body: isLoggedInAsync.when(
         data: (isLoggedIn) {
           if (isLoggedIn) {
